@@ -770,9 +770,9 @@ export default function SadocmixHome() {
           }}>
             {[
               { tier: "platino", mult: 4, title: "Morena", artist: "Beéle", streams: "400M", cover: "/img/discos/morena.jpg" },
-              { tier: "platino", mult: 1, title: "Ojos Azules", artist: "Blessd, Peso Pluma & SOG", streams: "100M", cover: "/img/discos/ojos-azules.jpg" },
-              { tier: "oro", mult: 3, title: "Viajeros", artist: "Dálmata & ELYSANIJ", streams: "30M", cover: "/img/discos/viajeros.jpg" },
-              { tier: "plata", mult: 5, title: "Enamorao", artist: "Gabriele", streams: "5M", cover: "/img/discos/enamorao.jpg" },
+              { tier: "platino", mult: 1, title: "Ojos Azules", artist: "Blessd, Peso Pluma & SOG", streams: "100M", cover: "/img/discos/Ojos-azules.jpg" },
+              { tier: "oro", mult: 3, title: "Viajeros", artist: "Dálmata & ELYSANIJ", streams: "30M", cover: "/img/discos/Viajeros.jpg" },
+              { tier: "plata", mult: 5, title: "Enamorao", artist: "Gabriele", streams: "5M", cover: "/img/discos/Enamorao.jpg" },
             ].map((d, i) => (
               <DiscCard key={d.title} {...d} delay={i * 70} />
             ))}
