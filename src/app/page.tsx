@@ -734,7 +734,7 @@ export default function SadocmixHome() {
       {/* ---------------- PALMARÉS ---------------- */}
       <section id="logros" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <Reveal><Kicker>Palmarés</Kicker></Reveal>
+          <Reveal><Kicker>ACHIEVEMENTS</Kicker></Reveal>
           <Reveal delay={60} style={{
             display: "flex", justifyContent: "space-between", alignItems: "flex-end",
             flexWrap: "wrap", gap: 18, marginTop: 14,
