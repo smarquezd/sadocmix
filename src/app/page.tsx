@@ -43,11 +43,13 @@ const LOGO_WHITE = "/img/logo-white.png";
 const AUDIO_EN_MEDALLO_DEMO = "/audio/en-medallo-demo.mp3";
 const AUDIO_EN_MEDALLO_MASTER = "/audio/en-medallo-master.mp3";
 
+
+
 /* --------------------------- enlaces de pago --------------------------- */
 /*  Enlaces de pago de Stripe (Payment Links). Crea cada uno en tu panel   */
 /*  de Stripe y pega aquí la URL. Deben empezar por https://buy.stripe.com */
 const PAYMENT_LINKS = {
-  mezclaMastering: "PEGA_AQUI_EL_LINK_DE_STRIPE",
+  mezclaMastering: "https://buy.stripe.com/cNi14m1Afebe4hr3DOdnW04",
   stemMastering: "https://buy.stripe.com/6oU14m4Mr7MQaFPb6gdnW03",
   clases: "PEGA_AQUI_EL_LINK_DE_STRIPE",
 };
