@@ -909,7 +909,7 @@ export default function SadocmixHome() {
               delay={0}
             />
             <ServiceCard
-              title="Stem Mastering" price="120€" per="/ tema" featured badge="Best Deal"
+              title="Stem Mastering" price="105€" per="/ tema" featured badge="Best Deal"
               bullets={[
                 "Hasta 8 grupos",
                 "Control afinado por sección",
