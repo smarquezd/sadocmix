@@ -249,11 +249,12 @@ function ABPlayer() {
   modeRef.current = mode;
   playingRef.current = playing;
 
-  // volumen efectivo: el activo suena, el otro a 0 (siguen reproduciéndose en paralelo y sincronizados)
+  // Selección A/B con la propiedad .muted (el volumen=0 lo ignora iOS; .muted sí se respeta).
+  // Las dos versiones suenan en paralelo y sincronizadas; solo una está sin silenciar.
   useEffect(() => {
-    const v = muted ? 0 : vol;
-    if (demoRef.current) demoRef.current.volume = mode === "ref" ? v : 0;
-    if (masterRef.current) masterRef.current.volume = mode === "master" ? v : 0;
+    const d = demoRef.current, m = masterRef.current;
+    if (d) { d.muted = !(mode === "ref" && !muted); d.volume = vol; }
+    if (m) { m.muted = !(mode === "master" && !muted); m.volume = vol; }
   }, [mode, vol, muted]);
 
   // cambio de pista: parar, recargar y resetear
@@ -494,7 +495,7 @@ function ABPlayer() {
             <input
               type="range" min={0} max={1} step={0.01} value={vol}
               onChange={(e) => { setVol(parseFloat(e.target.value)); if (muted) setMuted(false); }}
-              className="smx-range" style={{ width: 110 }}
+              className="smx-range smx-vol" style={{ width: 110 }}
             />
 
             <div style={{
@@ -567,6 +568,7 @@ export default function SadocmixHome() {
         .smx-range{-webkit-appearance:none;height:5px;border-radius:999px;background:${C.line};outline:none;}
         .smx-range::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:${C.orange};cursor:pointer;}
         .smx-range::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:${C.orange};cursor:pointer;}
+        @media(max-width:600px){.smx-vol{display:none;}}
         .smx-grain{position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.05;mix-blend-mode:overlay;
           background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
         @keyframes smxglow{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5;}50%{transform:translate(-50%,-50%) scale(1.15);opacity:.75;}}
