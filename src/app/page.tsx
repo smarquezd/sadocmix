@@ -43,6 +43,15 @@ const LOGO_WHITE = "/img/logo-white.png";
 const AUDIO_EN_MEDALLO_DEMO = "/audio/en-medallo-demo.mp3";
 const AUDIO_EN_MEDALLO_MASTER = "/audio/en-medallo-master.mp3";
 
+/* --------------------------- enlaces de pago --------------------------- */
+/*  Enlaces de pago de Stripe (Payment Links). Crea cada uno en tu panel   */
+/*  de Stripe y pega aquí la URL. Deben empezar por https://buy.stripe.com */
+const PAYMENT_LINKS = {
+  mezclaMastering: "PEGA_AQUI_EL_LINK_DE_STRIPE",
+  stemMastering: "https://buy.stripe.com/6oU14m4Mr7MQaFPb6gdnW03",
+  clases: "PEGA_AQUI_EL_LINK_DE_STRIPE",
+};
+
 /* ----------------------------- audio ----------------------------- */
 /*  Replace the file paths below with your real audio files.          */
 /*  Each track needs a `demo` (referencia) and `master` of identical  */
@@ -182,7 +191,15 @@ function ProductCard({ badge, title, price, delay }) {
   );
 }
 
-function ServiceCard({ title, price, per, bullets, featured, badge, delay }) {
+function ServiceCard({ title, price, per, bullets, featured, badge, link, delay }) {
+  const ready = typeof link === "string" && link.startsWith("https://");
+  const btnStyle = {
+    marginTop: "auto", fontFamily: F.display, fontWeight: 600, fontSize: 14.5,
+    padding: "13px 18px", borderRadius: 999, border: "none", cursor: ready ? "pointer" : "not-allowed",
+    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+    background: featured ? C.ink : C.orange, color: featured ? C.cream : C.ink,
+    textDecoration: "none", opacity: ready ? 1 : 0.55,
+  };
   return (
     <Reveal delay={delay} style={{
       background: featured ? C.orange : C.card,
@@ -217,14 +234,15 @@ function ServiceCard({ title, price, per, bullets, featured, badge, delay }) {
           </div>
         ))}
       </div>
-      <button className="smx-btn" style={{
-        marginTop: "auto", fontFamily: F.display, fontWeight: 600, fontSize: 14.5,
-        padding: "13px 18px", borderRadius: 999, border: "none", cursor: "pointer",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-        background: featured ? C.ink : C.orange, color: featured ? C.cream : C.ink,
-      }}>
-        Reservar <ArrowRight size={16} />
-      </button>
+      {ready ? (
+        <a className="smx-btn" href={link} target="_blank" rel="noopener noreferrer" style={btnStyle}>
+          Reservar <ArrowRight size={16} />
+        </a>
+      ) : (
+        <button className="smx-btn" disabled style={btnStyle}>
+          Reservar <ArrowRight size={16} />
+        </button>
+      )}
     </Reveal>
   );
 }
@@ -906,6 +924,7 @@ export default function SadocmixHome() {
                 "Optimiza el rango dinámico",
                 "Mejora el espaciado",
               ]}
+              link={PAYMENT_LINKS.mezclaMastering}
               delay={0}
             />
             <ServiceCard
@@ -915,6 +934,7 @@ export default function SadocmixHome() {
                 "Control afinado por sección",
                 "Misma cadena de mastering",
               ]}
+              link={PAYMENT_LINKS.stemMastering}
               delay={80}
             />
             <ServiceCard
@@ -924,6 +944,7 @@ export default function SadocmixHome() {
                 "A tu ritmo y tus referencias",
                 "Online o presencial en Madrid",
               ]}
+              link={PAYMENT_LINKS.clases}
               delay={160}
             />
           </div>
