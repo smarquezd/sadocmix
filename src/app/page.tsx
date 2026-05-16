@@ -940,7 +940,7 @@ export default function SadocmixHome() {
               delay={80}
             />
             <ServiceCard
-              title="Clases personalizadas" price="desde 35€" per="/ hora"
+              title="Clases personalizadas" price="desde xx€" per="/ hora"
               bullets={[
                 "Mezcla, master o producción",
                 "A tu ritmo y tus referencias",
