@@ -240,43 +240,102 @@ function DiscCard({ tier, mult, title, artist, streams, cover, delay }) {
 function ProductCard({ badge, title, price, delay, onBuy }) {
   const free = price === "Gratis";
   return (
-    <Reveal delay={delay} className="smx-product" style={{
-      background: C.cream, borderRadius: 20, overflow: "hidden", border: "1px solid rgba(0,0,0,.06)",
+    <Reveal delay={delay} className="smx-prodcard" style={{
+      background: C.card, borderRadius: 18, overflow: "hidden",
       display: "flex", flexDirection: "column", height: "100%",
     }}>
       <div style={{
-        position: "relative", aspectRatio: "1.15", flex: "none",
+        position: "relative", aspectRatio: "1 / 1", overflow: "hidden",
         background: "linear-gradient(150deg,#2A211A,#17120E)",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        <Headphones size={46} color="rgba(232,96,10,.5)" />
-        <div style={{
-          position: "absolute", top: 12, right: 12, fontFamily: F.mono, fontSize: 10.5,
-          letterSpacing: ".12em", textTransform: "uppercase",
-          color: free ? C.ink : C.cream, background: free ? C.orange : C.ink,
-          padding: "5px 10px", borderRadius: 999,
-        }}>{badge}</div>
-      </div>
-      <div style={{ padding: "16px 18px 18px", flex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 17, color: C.ink, lineHeight: 1.15 }}>{title}</div>
-        <div style={{
-          display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12,
-          marginTop: "auto", paddingTop: 14,
-        }}>
-          <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: 19, color: C.ink }}>{price}</span>
-          <span onClick={onBuy} style={{
-            display: "inline-flex", alignItems: "center", gap: 6, fontFamily: F.mono, fontSize: 12,
-            color: C.ink, background: "transparent", border: `1.5px solid ${C.ink}`,
-            padding: "7px 12px", borderRadius: 999, cursor: "pointer",
+        <Headphones className="smx-prodimg__art" size={44} color="rgba(232,96,10,.5)" />
+        <span style={{
+          position: "absolute", top: 11, right: 11, zIndex: 2,
+          fontFamily: F.mono, fontSize: 10, letterSpacing: ".12em", textTransform: "uppercase",
+          padding: "5px 9px", borderRadius: 999,
+          background: free ? C.orange : C.cream, color: C.ink,
+        }}>{badge}</span>
+        <div className="smx-prodadd" style={{ position: "absolute", left: 11, right: 11, bottom: 11, zIndex: 2 }}>
+          <button onClick={onBuy} style={{
+            width: "100%", border: "none", cursor: "pointer",
+            fontFamily: F.display, fontWeight: 600, fontSize: 14,
+            background: C.orange, color: C.ink, padding: "11px 14px", borderRadius: 999,
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+            boxShadow: "0 8px 20px -6px rgba(0,0,0,.5)",
           }}>
-            <Plus size={14} /> {free ? "Descargar" : "Añadir"}
-          </span>
+            <Plus size={15} /> {free ? "Descargar" : "Añadir"}
+          </button>
         </div>
+      </div>
+      <div style={{ padding: "14px 15px 16px", display: "flex", flexDirection: "column", gap: 9, flex: 1 }}>
+        <div className="smx-prodtitle" style={{
+          fontFamily: F.display, fontWeight: 700, fontSize: 15, color: C.text, lineHeight: 1.3,
+        }}>{title}</div>
+        <span style={{
+          marginTop: "auto", fontFamily: F.display, fontWeight: 800, fontSize: 19,
+          color: free ? C.orange : C.text,
+        }}>{price}</span>
       </div>
     </Reveal>
   );
 }
 
+function ServiceCard({ title, price, per, bullets, featured, badge, link, delay }) {
+  const ready = typeof link === "string" && link.startsWith("https://");
+  const btnStyle = {
+    marginTop: "auto", fontFamily: F.display, fontWeight: 600, fontSize: 14.5,
+    padding: "13px 18px", borderRadius: 999, border: "none", cursor: ready ? "pointer" : "not-allowed",
+    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+    background: featured ? C.ink : C.orange, color: featured ? C.cream : C.ink,
+    textDecoration: "none", opacity: ready ? 1 : 0.55,
+  };
+  return (
+    <Reveal delay={delay} style={{
+      background: featured ? C.orange : C.card,
+      border: `1px solid ${featured ? "transparent" : C.line}`,
+      borderRadius: 24, padding: "28px 26px", display: "flex", flexDirection: "column", gap: 18,
+      position: "relative",
+    }}>
+      {badge && (
+        <div style={{
+          position: "absolute", top: -13, left: "50%", transform: "translateX(-50%)",
+          fontFamily: F.mono, fontSize: 11, letterSpacing: ".18em", textTransform: "uppercase",
+          background: C.ink, color: C.orange, padding: "6px 14px", borderRadius: 999,
+          border: `1px solid ${C.orange}`, whiteSpace: "nowrap",
+        }}>{badge}</div>
+      )}
+      <div>
+        <div style={{
+          fontFamily: F.display, fontWeight: 700, fontSize: 23,
+          color: featured ? C.ink : C.text,
+        }}>{title}</div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 6 }}>
+          <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: 24, color: featured ? C.ink : C.orange }}>{price}</span>
+          <span style={{ fontFamily: F.mono, fontSize: 12, color: featured ? "rgba(22,17,12,.6)" : C.muted }}>{per}</span>
+        </div>
+      </div>
+      <div style={{ height: 1, background: featured ? "rgba(22,17,12,.18)" : C.line }} />
+      <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+        {bullets.map((b, i) => (
+          <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <Check size={16} color={featured ? C.ink : C.orange} style={{ marginTop: 2, flex: "none" }} />
+            <span style={{ fontFamily: F.body, fontSize: 14, color: featured ? "rgba(22,17,12,.85)" : C.muted }}>{b}</span>
+          </div>
+        ))}
+      </div>
+      {ready ? (
+        <a className="smx-btn" href={link} target="_blank" rel="noopener noreferrer" style={btnStyle}>
+          Reservar <ArrowRight size={16} />
+        </a>
+      ) : (
+        <button className="smx-btn" disabled style={btnStyle}>
+          Reservar <ArrowRight size={16} />
+        </button>
+      )}
+    </Reveal>
+  );
+}
 /* --------------------------- A/B player --------------------------- */
 function ABPlayer() {
   const [track, setTrack] = useState(0);
@@ -900,7 +959,23 @@ export default function SadocmixHome() {
       </section>
 
       {/* ---------------- PRODUCTS ---------------- */}
+            {/* ---------------- TIENDA / PRODUCTOS ---------------- */}
       <section id="recursos" style={{ padding: "clamp(60px,8vw,100px) clamp(16px,3vw,28px)", background: C.bg2, borderTop: `1px solid ${C.line}` }}>
+        <style>{`
+          .smx-prodgrid{display:grid;gap:18px;grid-template-columns:1fr;}
+          @media(min-width:560px){.smx-prodgrid{grid-template-columns:1fr 1fr;}}
+          @media(min-width:1000px){.smx-prodgrid{grid-template-columns:repeat(4,1fr);}}
+          .smx-prodcard{border:1px solid rgba(244,236,224,.12);transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease;}
+          .smx-prodcard:hover{transform:translateY(-6px);border-color:rgba(232,96,10,.45);box-shadow:0 22px 44px -16px rgba(0,0,0,.6);}
+          .smx-prodimg__art{transition:transform .55s cubic-bezier(.2,.7,.2,1);}
+          .smx-prodcard:hover .smx-prodimg__art{transform:scale(1.12);}
+          .smx-prodadd{transition:transform .34s cubic-bezier(.2,.7,.2,1),opacity .34s ease;}
+          @media(hover:hover){
+            .smx-prodadd{transform:translateY(150%);opacity:0;}
+            .smx-prodcard:hover .smx-prodadd{transform:translateY(0);opacity:1;}
+          }
+          .smx-prodtitle{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+        `}</style>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <Reveal style={{
             display: "inline-flex", alignItems: "center", gap: 7, background: C.orange, color: C.ink,
@@ -924,10 +999,7 @@ export default function SadocmixHome() {
               display: "flex", alignItems: "center", gap: 6,
             }}>Ver catálogo completo <ArrowRight size={15} /></span>
           </Reveal>
-          <div style={{
-            display: "grid", gap: 18,
-            gridTemplateColumns: "repeat(auto-fill,minmax(230px,1fr))",
-          }}>
+          <div className="smx-prodgrid">
             {[
               ["Vocal Chain", "Cadena Vocal — Beele", "19€"],
               ["Plantilla", "Template Vocal Fx (Reverbs, Delays,Parallels) — Reggaetón", "24€"],
