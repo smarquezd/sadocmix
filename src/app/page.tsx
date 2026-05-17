@@ -6,6 +6,17 @@ import {
   Play, Pause, Volume2, VolumeX, Check, ArrowRight, ArrowUpRight,
   ShoppingBag, Menu, X, Disc3, Plus, Headphones, Sparkles,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+/* ----------------------- logo 3D (paquete "3dsvg") ----------------------- */
+/*  <SVG3D> extruye un SVG a 3D en el navegador (usa WebGL). En Next.js debe */
+/*  cargarse con next/dynamic y ssr:false. Usamos SOLO el isotipo (3 aspas): */
+/*  el logo completo con el texto pequeño genera una malla enorme y pesada.  */
+const SVG3D = dynamic(() => import("3dsvg").then((m) => ({ default: m.SVG3D })), {
+  ssr: false,
+});
+
+const ISOTIPO_3D_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="332.63 68.05 176.63 220.74"><path d="M495.26,145.75L495.26,145.75L379.4,226.01c-13.85,9.59-32.77-0.32-32.77-17.16v0l115.86-80.26C476.34,119,495.26,128.91,495.26,145.75z"/><path d="M401.4,234.34l93.86-65.02v15.21c0,15.44-7.57,29.9-20.27,38.69l-74.44,51.57L401.4,234.34z"/><path d="M439.99,122.5l-93.36,64.67v-15.21c0-15.44,7.57-29.9,20.27-38.69l73.94-51.22L439.99,122.5z"/></svg>`;
 
 /* ------------------------------------------------------------------ */
 /*  SADOCMIX — homepage prototype                                      */
@@ -707,7 +718,18 @@ export default function SadocmixHome() {
           {/* hero visual */}
           <Reveal delay={200} style={{ display: "flex", justifyContent: "center", position: "relative" }}>
             <div style={{ position: "relative" }}>
-              <Disc tier="platino" size={330} spin />
+              <div style={{ width: "min(400px, 82vw)", height: "min(400px, 82vw)" }}>
+                <SVG3D
+                  svg={ISOTIPO_3D_SVG}
+                  depth={0.8}
+                  smoothness={0.4}
+                  color="#000000"
+                  material="metal"
+                  metalness={0.9}
+                  roughness={0.2}
+                  animate="pulse"
+                />
+              </div>
               <div style={{
                 position: "absolute", top: -10, right: -18, background: C.cream, color: C.ink,
                 fontFamily: F.display, fontWeight: 700, fontSize: 13, padding: "10px 16px",
@@ -940,7 +962,7 @@ export default function SadocmixHome() {
               delay={80}
             />
             <ServiceCard
-              title="Clases personalizadas" price="desde xx€" per="/ hora"
+              title="Clases personalizadas" price="desde 35€" per="/ hora"
               bullets={[
                 "Mezcla, master o producción",
                 "A tu ritmo y tus referencias",
