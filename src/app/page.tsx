@@ -7,6 +7,7 @@ import {
   ShoppingBag, Menu, X, Disc3, Plus, Headphones, Sparkles,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { Analytics } from "@vercel/analytics/next"
 
 /* ----------------------- logo 3D (paquete "3dsvg") ----------------------- */
 /*  <SVG3D> extruye un SVG a 3D en el navegador (usa WebGL). En Next.js debe */
