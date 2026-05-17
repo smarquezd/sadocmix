@@ -264,7 +264,7 @@ function ProductCard({ badge, title, price, delay, onBuy }) {
             display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
             boxShadow: "0 8px 20px -6px rgba(0,0,0,.5)",
           }}>
-            <Plus size={15} /> {free ? "Descargar" : "Añadir"}
+            <Plus size={15} /> {free ? "Descargar" : "Comprar ahora"}
           </button>
         </div>
       </div>
