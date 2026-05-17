@@ -980,10 +980,10 @@ export default function SadocmixHome() {
             gridTemplateColumns: "repeat(auto-fill,minmax(230px,1fr))",
           }}>
             {[
-              ["Vocal Chain", "Cadena Vocal — Urbano Pro", "19€"],
-              ["Plantilla", "Template de Mezcla — Reggaetón", "24€"],
+              ["Vocal Chain", "Cadena Vocal — Beele", "19€"],
+              ["Plantilla", "Template Vocal Fx (Reverbs, Delays,Parallels) — Reggaetón", "24€"],
               ["Curso", "Mastering desde Cero", "89€"],
-              ["Gratis", "Starter Pack — Saturación", "Gratis"],
+              ["Gratis", "Starter Pack Vocal Chain Ableton", "Gratis"],
             ].map(([badge, title, price], i) => (
               <ProductCard key={title} badge={badge} title={title} price={price} delay={i * 50} onBuy={() => showToast("Próximamente disponible")} />
             ))}
