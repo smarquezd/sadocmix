@@ -910,8 +910,8 @@ export default function SadocmixHome() {
               fontFamily: F.body, fontSize: 15.5, color: C.muted, textAlign: "center",
               maxWidth: 520, margin: "14px auto 36px", lineHeight: 1.6,
             }}>
-              Cambia entre la <strong style={{ color: C.text }}>referencia</strong> y el{" "}
-              <strong style={{ color: C.orange }}>master</strong> sin perder el punto de reproducción.
+              Cambia entre la <strong style={{ color: C.text }}>Referencia</strong> y el{" "}
+              <strong style={{ color: C.orange }}>Master</strong> sin perder el punto de reproducción.
               Las dos versiones suenan en paralelo, perfectamente sincronizadas.
             </p>
           </Reveal>
