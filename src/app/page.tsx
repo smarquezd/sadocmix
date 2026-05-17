@@ -16,7 +16,75 @@ const SVG3D = dynamic(() => import("3dsvg").then((m) => ({ default: m.SVG3D })),
   ssr: false,
 });
 
+/* Isotipo de la marca como SVG en línea, para usarlo como icono pequeño. */
+function IsotipoMark({ size = 22, color = "#E8600A" }) {
+  return (
+    <svg
+      viewBox="332.63 68.05 176.63 220.74"
+      height={size}
+      width={Math.round(size * 0.8)}
+      fill={color}
+      aria-hidden="true"
+      style={{ flex: "none", display: "block" }}
+    >
+      <path d="M495.26,145.75L495.26,145.75L379.4,226.01c-13.85,9.59-32.77-0.32-32.77-17.16v0l115.86-80.26C476.34,119,495.26,128.91,495.26,145.75z" />
+      <path d="M401.4,234.34l93.86-65.02v15.21c0,15.44-7.57,29.9-20.27,38.69l-74.44,51.57L401.4,234.34z" />
+      <path d="M439.99,122.5l-93.36,64.67v-15.21c0-15.44,7.57-29.9,20.27-38.69l73.94-51.22L439.99,122.5z" />
+    </svg>
+  );
+}
+
 const ISOTIPO_3D_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="332.63 68.05 176.63 220.74"><path d="M495.26,145.75L495.26,145.75L379.4,226.01c-13.85,9.59-32.77-0.32-32.77-17.16v0l115.86-80.26C476.34,119,495.26,128.91,495.26,145.75z"/><path d="M401.4,234.34l93.86-65.02v15.21c0,15.44-7.57,29.9-20.27,38.69l-74.44,51.57L401.4,234.34z"/><path d="M439.99,122.5l-93.36,64.67v-15.21c0-15.44,7.57-29.9,20.27-38.69l73.94-51.22L439.99,122.5z"/></svg>`;
+
+/* Logo 3D del hero: gira sobre su propio eje Y según el scroll de la página.
+   Al bajar gira hacia un lado y al subir vuelve girando a su punto inicial.
+   Le pasamos `rotationY` al motor 3D (en radianes); el componente lo suaviza
+   solo. No tocamos el contenedor con CSS, así el lienzo no se reescala. */
+function HeroLogo3D() {
+  const [rotationY, setRotationY] = useState(0);
+
+  useEffect(() => {
+    // SPIN = giro total en radianes al recorrer toda la página.
+    // Math.PI * 2 = una vuelta completa. Para un giro más leve: Math.PI (media
+    // vuelta) o Math.PI / 3 (giro ligero). Cámbialo a tu gusto.
+    const SPIN = - Math.PI * 7;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+      setRotationY(progress * SPIN);
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div style={{ width: "min(400px, 82vw)", height: "min(400px, 82vw)" }}>
+      <SVG3D
+        svg={ISOTIPO_3D_SVG}
+        depth={0.9}
+        smoothness={0.4}
+        color="#ffffff"
+        material="emissive"
+        metalness={0.9}
+        roughness={0.2}
+        animate="none"
+        interactive={false}
+        cursorOrbit={false}
+        rotationY={rotationY}
+        zoom={7}
+      />
+    </div>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  SADOCMIX — homepage prototype                                      */
@@ -168,7 +236,7 @@ function DiscCard({ tier, mult, title, artist, streams, cover, delay }) {
   );
 }
 
-function ProductCard({ badge, title, price, delay }) {
+function ProductCard({ badge, title, price, delay, onBuy }) {
   const free = price === "Gratis";
   return (
     <Reveal delay={delay} className="smx-product" style={{
@@ -191,7 +259,7 @@ function ProductCard({ badge, title, price, delay }) {
         <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 17, color: C.ink, lineHeight: 1.15 }}>{title}</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
           <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: 19, color: C.ink }}>{price}</span>
-          <span style={{
+          <span onClick={onBuy} style={{
             display: "inline-flex", alignItems: "center", gap: 6, fontFamily: F.mono, fontSize: 12,
             color: C.ink, background: "transparent", border: `1.5px solid ${C.ink}`,
             padding: "7px 12px", borderRadius: 999, cursor: "pointer",
@@ -547,6 +615,14 @@ function ABPlayer() {
 /* ----------------------------- page ----------------------------- */
 export default function SadocmixHome() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [toast, setToast] = useState("");
+  const toastTimer = useRef(null);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(""), 2800);
+  };
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -706,7 +782,7 @@ export default function SadocmixHome() {
               display: "flex", gap: 22, flexWrap: "wrap", marginTop: 36,
               paddingTop: 26, borderTop: `1px solid ${C.line}`,
             }}>
-              {["+1 Billón de streams", "6 discos de platino", "4 discos de oro", "Top 1% global en mastering"].map((f) => (
+              {["+1 Billón de Streams", "6 Discos de Platino", "4 Discos de Oro", "Top 1% Global de Mastering"].map((f) => (
                 <div key={f} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Check size={16} color={C.orange} />
                   <span style={{ fontFamily: F.mono, fontSize: 12.5, color: C.muted }}>{f}</span>
@@ -718,20 +794,9 @@ export default function SadocmixHome() {
           {/* hero visual */}
           <Reveal delay={200} style={{ display: "flex", justifyContent: "center", position: "relative" }}>
             <div style={{ position: "relative" }}>
-              <div style={{ width: "min(400px, 82vw)", height: "min(400px, 82vw)" }}>
-                <SVG3D
-                  svg={ISOTIPO_3D_SVG}
-                  depth={0.8}
-                  smoothness={0.4}
-                  color="#000000"
-                  material="metal"
-                  metalness={0.9}
-                  roughness={0.2}
-                  animate="pulse"
-                />
-              </div>
+              <HeroLogo3D />
               <div style={{
-                position: "absolute", top: -10, right: -18, background: C.cream, color: C.ink,
+                position: "absolute", top: 30, right: -1, background: C.cream, color: C.ink,
                 fontFamily: F.display, fontWeight: 700, fontSize: 13, padding: "10px 16px",
                 borderRadius: 999, boxShadow: "0 14px 30px -10px rgba(0,0,0,.6)",
                 display: "flex", alignItems: "center", gap: 7,
@@ -765,7 +830,7 @@ export default function SadocmixHome() {
                   fontFamily: F.display, fontWeight: 700, fontSize: 22, color: C.faint,
                   padding: "0 28px", display: "flex", alignItems: "center", gap: 56,
                 }}>
-                  {w}<span style={{ color: C.orange }}>✦</span>
+                  {w}<IsotipoMark size={20} color={C.orange} /> 
                 </span>
               ))}
             </div>
@@ -920,7 +985,7 @@ export default function SadocmixHome() {
               ["Curso", "Mastering desde Cero", "89€"],
               ["Gratis", "Starter Pack — Saturación", "Gratis"],
             ].map(([badge, title, price], i) => (
-              <ProductCard key={title} badge={badge} title={title} price={price} delay={i * 50} />
+              <ProductCard key={title} badge={badge} title={title} price={price} delay={i * 50} onBuy={() => showToast("Próximamente disponible")} />
             ))}
           </div>
         </div>
@@ -962,7 +1027,7 @@ export default function SadocmixHome() {
               delay={80}
             />
             <ServiceCard
-              title="Clases personalizadas" price="desde 35€" per="/ hora"
+              title="Clases personalizadas" price="desde XX€" per="/ hora"
               bullets={[
                 "Mezcla, master o producción",
                 "A tu ritmo y tus referencias",
@@ -1035,7 +1100,21 @@ export default function SadocmixHome() {
           <span style={{ fontFamily: F.mono, fontSize: 11.5, color: C.faint }}>Hecho en Madrid 🎚</span>
         </div>
       </footer>
-      <style>{`@media(min-width:820px){.smx-footgrid{grid-template-columns:1.4fr 1fr 1fr 1fr 1fr!important;}}`}</style>
+      <style>{`@media(min-width:820px){.smx-footgrid{grid-template-columns:1.4fr 1fr 1fr 1fr 1fr!important;}}
+@keyframes smxtoast{from{opacity:0;transform:translate(-50%,-50%) scale(.92);}to{opacity:1;transform:translate(-50%,-50%) scale(1);}}`}</style>
+      {toast && (
+        <div style={{
+          position: "fixed", left: "50%", top: "50%", zIndex: 300,
+          transform: "translate(-50%,-50%)",
+          background: C.ink, color: C.cream, border: `1px solid ${C.lineHi}`,
+          fontFamily: F.mono, fontSize: 16, padding: "20px 32px", borderRadius: 999,
+          boxShadow: "0 24px 60px -12px rgba(0,0,0,.7)",
+          display: "flex", alignItems: "center", gap: 12,
+          animation: "smxtoast .35s cubic-bezier(.2,.7,.2,1)",
+        }}>
+          <Sparkles size={19} color={C.orange} /> {toast}
+        </div>
+      )}
     </div>
   );
 }
