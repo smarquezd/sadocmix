@@ -242,9 +242,10 @@ function ProductCard({ badge, title, price, delay, onBuy }) {
   return (
     <Reveal delay={delay} className="smx-product" style={{
       background: C.cream, borderRadius: 20, overflow: "hidden", border: "1px solid rgba(0,0,0,.06)",
+      display: "flex", flexDirection: "column", height: "100%",
     }}>
       <div style={{
-        position: "relative", aspectRatio: "1.15",
+        position: "relative", aspectRatio: "1.15", flex: "none",
         background: "linear-gradient(150deg,#2A211A,#17120E)",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
@@ -256,9 +257,12 @@ function ProductCard({ badge, title, price, delay, onBuy }) {
           padding: "5px 10px", borderRadius: 999,
         }}>{badge}</div>
       </div>
-      <div style={{ padding: "16px 18px 18px" }}>
+      <div style={{ padding: "16px 18px 18px", flex: 1, display: "flex", flexDirection: "column" }}>
         <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 17, color: C.ink, lineHeight: 1.15 }}>{title}</div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
+        <div style={{
+          display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12,
+          marginTop: "auto", paddingTop: 14,
+        }}>
           <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: 19, color: C.ink }}>{price}</span>
           <span onClick={onBuy} style={{
             display: "inline-flex", alignItems: "center", gap: 6, fontFamily: F.mono, fontSize: 12,
@@ -269,62 +273,6 @@ function ProductCard({ badge, title, price, delay, onBuy }) {
           </span>
         </div>
       </div>
-    </Reveal>
-  );
-}
-
-function ServiceCard({ title, price, per, bullets, featured, badge, link, delay }) {
-  const ready = typeof link === "string" && link.startsWith("https://");
-  const btnStyle = {
-    marginTop: "auto", fontFamily: F.display, fontWeight: 600, fontSize: 14.5,
-    padding: "13px 18px", borderRadius: 999, border: "none", cursor: ready ? "pointer" : "not-allowed",
-    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-    background: featured ? C.ink : C.orange, color: featured ? C.cream : C.ink,
-    textDecoration: "none", opacity: ready ? 1 : 0.55,
-  };
-  return (
-    <Reveal delay={delay} style={{
-      background: featured ? C.orange : C.card,
-      border: `1px solid ${featured ? "transparent" : C.line}`,
-      borderRadius: 24, padding: "28px 26px", display: "flex", flexDirection: "column", gap: 18,
-      position: "relative",
-    }}>
-      {badge && (
-        <div style={{
-          position: "absolute", top: -13, left: "50%", transform: "translateX(-50%)",
-          fontFamily: F.mono, fontSize: 11, letterSpacing: ".18em", textTransform: "uppercase",
-          background: C.ink, color: C.orange, padding: "6px 14px", borderRadius: 999,
-          border: `1px solid ${C.orange}`, whiteSpace: "nowrap",
-        }}>{badge}</div>
-      )}
-      <div>
-        <div style={{
-          fontFamily: F.display, fontWeight: 700, fontSize: 23,
-          color: featured ? C.ink : C.text,
-        }}>{title}</div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 6 }}>
-          <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: 24, color: featured ? C.ink : C.orange }}>{price}</span>
-          <span style={{ fontFamily: F.mono, fontSize: 12, color: featured ? "rgba(22,17,12,.6)" : C.muted }}>{per}</span>
-        </div>
-      </div>
-      <div style={{ height: 1, background: featured ? "rgba(22,17,12,.18)" : C.line }} />
-      <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
-        {bullets.map((b, i) => (
-          <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-            <Check size={16} color={featured ? C.ink : C.orange} style={{ marginTop: 2, flex: "none" }} />
-            <span style={{ fontFamily: F.body, fontSize: 14, color: featured ? "rgba(22,17,12,.85)" : C.muted }}>{b}</span>
-          </div>
-        ))}
-      </div>
-      {ready ? (
-        <a className="smx-btn" href={link} target="_blank" rel="noopener noreferrer" style={btnStyle}>
-          Reservar <ArrowRight size={16} />
-        </a>
-      ) : (
-        <button className="smx-btn" disabled style={btnStyle}>
-          Reservar <ArrowRight size={16} />
-        </button>
-      )}
     </Reveal>
   );
 }
