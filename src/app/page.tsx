@@ -4,10 +4,12 @@
 import { useState, useRef, useEffect } from "react";
 import {
   Play, Pause, Volume2, VolumeX, Check, ArrowRight, ArrowUpRight,
-  ShoppingBag, Menu, X, Disc3, Plus, Headphones, Sparkles,
+  ShoppingBag, Menu, X, Disc3, Plus, Headphones, Sparkles, Info,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Analytics } from "@vercel/analytics/next"
+import Link from "next/link";
+import { PRODUCTOS } from "../data/productos";
 
 /* ----------------------- logo 3D (paquete "3dsvg") ----------------------- */
 /*  <SVG3D> extruye un SVG a 3D en el navegador (usa WebGL). En Next.js debe */
@@ -237,8 +239,9 @@ function DiscCard({ tier, mult, title, artist, streams, cover, delay }) {
   );
 }
 
-function ProductCard({ badge, title, price, delay, onBuy }) {
+function ProductCard({ badge, title, price, cover, slug, delay, onBuy }) {
   const free = price === "Gratis";
+  const [infoHover, setInfoHover] = useState(false);
   return (
     <Reveal delay={delay} className="smx-prodcard" style={{
       background: C.card, borderRadius: 18, overflow: "hidden",
@@ -249,7 +252,13 @@ function ProductCard({ badge, title, price, delay, onBuy }) {
         background: "linear-gradient(150deg,#2A211A,#17120E)",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        <Headphones className="smx-prodimg__art" size={44} color="rgba(232,96,10,.5)" />
+        {cover ? (
+          <img className="smx-prodimg__art" src={cover} alt={title} style={{
+            width: "100%", height: "100%", objectFit: "cover", display: "block",
+          }} />
+        ) : (
+          <Headphones className="smx-prodimg__art" size={44} color="rgba(232,96,10,.5)" />
+        )}
         <span style={{
           position: "absolute", top: 11, right: 11, zIndex: 2,
           fontFamily: F.mono, fontSize: 10, letterSpacing: ".12em", textTransform: "uppercase",
@@ -268,16 +277,195 @@ function ProductCard({ badge, title, price, delay, onBuy }) {
           </button>
         </div>
       </div>
-      <div style={{ padding: "14px 15px 16px", display: "flex", flexDirection: "column", gap: 9, flex: 1 }}>
+      <div style={{ padding: "14px 15px 16px", display: "flex", flexDirection: "column", gap: 11, flex: 1 }}>
         <div className="smx-prodtitle" style={{
           fontFamily: F.display, fontWeight: 700, fontSize: 15, color: C.text, lineHeight: 1.3,
         }}>{title}</div>
-        <span style={{
-          marginTop: "auto", fontFamily: F.display, fontWeight: 800, fontSize: 19,
-          color: free ? C.orange : C.text,
-        }}>{price}</span>
+        <div style={{
+          marginTop: "auto", display: "flex", alignItems: "center",
+          justifyContent: "space-between", gap: 10,
+        }}>
+          <span style={{
+            fontFamily: F.display, fontWeight: 800, fontSize: 19,
+            color: free ? C.orange : C.text,
+          }}>{price}</span>
+          <Link
+            href={`/recursos/${slug}`}
+            onMouseEnter={() => setInfoHover(true)}
+            onMouseLeave={() => setInfoHover(false)}
+            style={{
+              display: "flex", alignItems: "center", gap: 6, cursor: "pointer",
+              fontFamily: F.mono, fontSize: 11.5, letterSpacing: ".06em", textTransform: "uppercase",
+              color: infoHover ? C.ink : C.cream2,
+              background: infoHover ? C.orange : "transparent",
+              border: `1px solid ${infoHover ? C.orange : C.lineHi}`,
+              borderRadius: 999, padding: "7px 12px", textDecoration: "none",
+              transition: "background .2s ease,color .2s ease,border-color .2s ease",
+            }}
+          >
+            <Info size={13} /> Info
+          </Link>
+        </div>
       </div>
     </Reveal>
+  );
+}
+
+/* ---- Ventana emergente "Info" de cada producto de la tienda ---- YA SE PUEDE BORRAR NO SE ESTA USANDO LA FUNCION ProductModal */
+function ProductModal({ product, onClose, onBuy }) {
+  useEffect(() => {
+    if (!product) return;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [product, onClose]);
+
+  if (!product) return null;
+  const { badge, title, price, cover, descripcion, plugins, incluye } = product;
+  const free = price === "Gratis";
+
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, zIndex: 320,
+      background: "rgba(8,6,4,.78)", backdropFilter: "blur(7px)", WebkitBackdropFilter: "blur(7px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: "clamp(14px,4vw,40px)", animation: "smxmodalbg .25s ease",
+    }}>
+      <style>{`
+        @keyframes smxmodalbg{from{opacity:0;}to{opacity:1;}}
+        @keyframes smxmodalin{from{opacity:0;transform:translateY(18px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+        .smx-modal{display:flex;flex-direction:column;}
+        @media(min-width:680px){.smx-modal{flex-direction:row;}}
+        .smx-modal__cover{width:100%;aspect-ratio:1/1;}
+        @media(min-width:680px){.smx-modal__cover{width:264px;aspect-ratio:auto;align-self:stretch;}}
+      `}</style>
+
+      <div className="smx-modal" onClick={(e) => e.stopPropagation()} style={{
+        width: "100%", maxWidth: 720, maxHeight: "88vh", overflowY: "auto",
+        background: C.card, borderRadius: 24, border: `1px solid ${C.lineHi}`,
+        boxShadow: "0 40px 90px -20px rgba(0,0,0,.8)",
+        animation: "smxmodalin .34s cubic-bezier(.2,.7,.2,1)", position: "relative",
+      }}>
+        <button onClick={onClose} aria-label="Cerrar" style={{
+          position: "absolute", top: 14, right: 14, zIndex: 3,
+          width: 38, height: 38, borderRadius: "50%", cursor: "pointer",
+          border: `1px solid ${C.lineHi}`, background: "rgba(15,11,8,.6)",
+          color: C.cream, display: "flex", alignItems: "center", justifyContent: "center",
+          backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+        }}>
+          <X size={18} />
+        </button>
+
+        {/* portada */}
+        <div className="smx-modal__cover" style={{
+          position: "relative", flex: "none", overflow: "hidden",
+          background: "linear-gradient(150deg,#2A211A,#17120E)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {cover ? (
+            <img src={cover} alt={title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          ) : (
+            <Headphones size={58} color="rgba(232,96,10,.45)" />
+          )}
+          <span style={{
+            position: "absolute", top: 14, left: 14,
+            fontFamily: F.mono, fontSize: 10.5, letterSpacing: ".14em", textTransform: "uppercase",
+            padding: "5px 11px", borderRadius: 999,
+            background: free ? C.orange : C.cream, color: C.ink,
+          }}>{badge}</span>
+        </div>
+
+        {/* detalles */}
+        <div style={{ padding: "clamp(22px,3vw,32px)", display: "flex", flexDirection: "column", gap: 18, flex: 1 }}>
+          <div>
+            <div style={{
+              fontFamily: F.mono, fontSize: 11, letterSpacing: ".16em",
+              textTransform: "uppercase", color: C.orange, marginBottom: 9,
+            }}>Detalles del paquete</div>
+            <h3 style={{
+              fontFamily: F.display, fontWeight: 800, fontSize: "clamp(21px,2.6vw,27px)",
+              lineHeight: 1.15, letterSpacing: "-.01em", color: C.text,
+            }}>{title}</h3>
+          </div>
+
+          {descripcion && (
+            <p style={{ fontFamily: F.body, fontSize: 14.5, lineHeight: 1.6, color: C.muted }}>{descripcion}</p>
+          )}
+
+          {plugins && plugins.length > 0 && (
+            <div>
+              <div style={{
+                fontFamily: F.mono, fontSize: 11, letterSpacing: ".14em", textTransform: "uppercase",
+                color: C.cream2, marginBottom: 12, display: "flex", alignItems: "center", gap: 8,
+              }}>
+                <IsotipoMark size={14} color={C.orange} /> Plugins utilizados
+              </div>
+              <div style={{ border: `1px solid ${C.line}`, borderRadius: 14, overflow: "hidden" }}>
+                {plugins.map((p, i) => (
+                  <div key={i} style={{
+                    display: "flex", alignItems: "center", gap: 13, padding: "12px 14px",
+                    borderTop: i === 0 ? "none" : `1px solid ${C.line}`,
+                    background: i % 2 ? "transparent" : "rgba(244,236,224,.02)",
+                  }}>
+                    <span style={{ fontFamily: F.mono, fontSize: 11, color: C.faint, flex: "none", width: 22 }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span style={{
+                      fontFamily: F.display, fontWeight: 700, fontSize: 14.5, color: C.text,
+                      flex: 1, lineHeight: 1.25,
+                    }}>{p.nombre}</span>
+                    <span style={{ fontFamily: F.mono, fontSize: 11.5, color: C.muted, flex: "none", textAlign: "right" }}>
+                      {p.empresa}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {incluye && incluye.length > 0 && (
+            <div>
+              <div style={{
+                fontFamily: F.mono, fontSize: 11, letterSpacing: ".14em", textTransform: "uppercase",
+                color: C.cream2, marginBottom: 12,
+              }}>Qué incluye</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                {incluye.map((it, i) => (
+                  <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                    <Check size={16} color={C.orange} style={{ marginTop: 2, flex: "none" }} />
+                    <span style={{ fontFamily: F.body, fontSize: 14, color: C.muted }}>{it}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div style={{
+            marginTop: "auto", paddingTop: 18, borderTop: `1px solid ${C.line}`,
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            gap: 14, flexWrap: "wrap",
+          }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontFamily: F.mono, fontSize: 10.5, letterSpacing: ".1em", textTransform: "uppercase", color: C.faint }}>Precio</span>
+              <span style={{ fontFamily: F.display, fontWeight: 800, fontSize: 27, color: free ? C.orange : C.text }}>{price}</span>
+            </div>
+            <button className="smx-btn" onClick={() => onBuy && onBuy()} style={{
+              fontFamily: F.display, fontWeight: 700, fontSize: 15,
+              background: C.orange, color: C.ink, border: "none", cursor: "pointer",
+              padding: "14px 26px", borderRadius: 999,
+              display: "flex", alignItems: "center", gap: 9,
+            }}>
+              {free ? "Descargar" : "Comprar ahora"} <ArrowRight size={17} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -624,6 +812,7 @@ function ABPlayer() {
 export default function SadocmixHome() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
+  const [infoProduct, setInfoProduct] = useState(null);
   const toastTimer = useRef(null);
 
   const showToast = (msg) => {
@@ -1000,13 +1189,17 @@ export default function SadocmixHome() {
             }}>Ver catálogo completo <ArrowRight size={15} /></span>
           </Reveal>
           <div className="smx-prodgrid">
-            {[
-              ["Vocal Chain", "Cadena Vocal — Beele", "19€"],
-              ["Plantilla", "Template Vocal Fx (Reverbs, Delays,Parallels) — Reggaetón", "24€"],
-              ["Curso", "Mastering desde Cero", "89€"],
-              ["Gratis", "Starter Pack Vocal Chain Ableton", "Gratis"],
-            ].map(([badge, title, price], i) => (
-              <ProductCard key={title} badge={badge} title={title} price={price} delay={i * 50} onBuy={() => showToast("Próximamente disponible")} />
+            {PRODUCTOS.map((p, i) => (
+              <ProductCard
+                key={p.slug}
+                slug={p.slug}
+                badge={p.badge}
+                title={p.title}
+                price={p.price}
+                cover={p.cover}
+                delay={i * 50}
+                onBuy={() => showToast("Próximamente disponible")}
+              />
             ))}
           </div>
         </div>
@@ -1123,6 +1316,7 @@ export default function SadocmixHome() {
       </footer>
       <style>{`@media(min-width:820px){.smx-footgrid{grid-template-columns:1.4fr 1fr 1fr 1fr 1fr!important;}}
 @keyframes smxtoast{from{opacity:0;transform:translate(-50%,-50%) scale(.92);}to{opacity:1;transform:translate(-50%,-50%) scale(1);}}`}</style>
+      
       {toast && (
         <div style={{
           position: "fixed", left: "50%", top: "50%", zIndex: 300,
@@ -1133,6 +1327,11 @@ export default function SadocmixHome() {
           display: "flex", alignItems: "center", gap: 12,
           animation: "smxtoast .35s cubic-bezier(.2,.7,.2,1)",
         }}>
+          <ProductModal
+        product={infoProduct}
+        onClose={() => setInfoProduct(null)}
+        onBuy={() => { setInfoProduct(null); showToast("Próximamente disponible"); }}
+      />
           <Sparkles size={19} color={C.orange} /> {toast}
         </div>
       )}
