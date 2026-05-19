@@ -33,6 +33,61 @@ export const PRODUCTOS = [
     price: "19€",
     cover: "",
     comprarLink: "",
+    // Versiones por DAW. Cada una con su enlace de pago/descarga, sus requisitos
+    // y su lista de "qué incluye" — la página se actualiza al elegir el DAW.
+    // Quita o añade DAW libremente. Si dejas 'daws' fuera, no aparece el desplegable.
+    daws: [
+      {
+        nombre: "Ableton Live",
+        comprarLink: "",
+        requisitos: "Ableton Live 11 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Cadena de voz para Ableton Live (.adg)",
+          "Versión para voz principal y para coros",
+          "Guía rápida de instalación en PDF",
+        ],
+      },
+      {
+        nombre: "FL Studio",
+        comprarLink: "",
+        requisitos: "FL Studio 21 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Preset de cadena de voz para FL Studio",
+          "Versión para voz principal y para coros",
+          "Guía rápida de instalación en PDF",
+        ],
+      },
+      {
+        nombre: "Logic Pro",
+        comprarLink: "",
+        requisitos: "Logic Pro 10.7 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Channel Strip de voz para Logic Pro",
+          "Versión para voz principal y para coros",
+          "Guía rápida de instalación en PDF",
+        ],
+      },
+      {
+        nombre: "Pro Tools",
+        comprarLink: "",
+        requisitos: "Pro Tools 2022 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Track Preset de voz para Pro Tools",
+          "Versión para voz principal y para coros",
+          "Guía rápida de instalación en PDF",
+        ],
+      },
+      {
+        nombre: "Studio One",
+        comprarLink: "",
+        requisitos: "Studio One 6 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "FX Chain de voz para Studio One",
+          "Versión para voz principal y para coros",
+          "Guía rápida de instalación en PDF",
+        ],
+      },
+    ],
     tagline: "El carácter cálido y pegado de Beele, listo para cargar.",
     descripcionLarga:
       "Una cadena de voz completa, afinada para el tono cálido y cercano de Beele. Presencia, cuerpo y un fondo de delays y reverbs ya equilibrado, para que solo tengas que cargar tu toma y cantar.",
@@ -65,6 +120,58 @@ export const PRODUCTOS = [
     price: "24€",
     cover: "",
     comprarLink: "",
+    daws: [
+      {
+        nombre: "Ableton Live",
+        comprarLink: "",
+        requisitos: "Ableton Live 11 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Sesión de Ableton Live con los FX enrutados",
+          "Buses de reverb, delay y paralelos etiquetados",
+          "Guía rápida de uso en PDF",
+        ],
+      },
+      {
+        nombre: "FL Studio",
+        comprarLink: "",
+        requisitos: "FL Studio 21 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Proyecto de FL Studio con los FX enrutados",
+          "Buses de reverb, delay y paralelos etiquetados",
+          "Guía rápida de uso en PDF",
+        ],
+      },
+      {
+        nombre: "Logic Pro",
+        comprarLink: "",
+        requisitos: "Logic Pro 10.7 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Proyecto de Logic Pro con los FX enrutados",
+          "Buses de reverb, delay y paralelos etiquetados",
+          "Guía rápida de uso en PDF",
+        ],
+      },
+      {
+        nombre: "Pro Tools",
+        comprarLink: "",
+        requisitos: "Pro Tools 2022 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Sesión de Pro Tools con los FX enrutados",
+          "Buses de reverb, delay y paralelos etiquetados",
+          "Guía rápida de uso en PDF",
+        ],
+      },
+      {
+        nombre: "Studio One",
+        comprarLink: "",
+        requisitos: "Studio One 6 o superior. Necesitas tener instalados los plugins listados.",
+        incluye: [
+          "Canción de Studio One con los FX enrutados",
+          "Buses de reverb, delay y paralelos etiquetados",
+          "Guía rápida de uso en PDF",
+        ],
+      },
+    ],
     tagline: "Reverbs, delays y cadenas en paralelo ya enrutadas para reggaetón.",
     descripcionLarga:
       "Plantilla de efectos de voz pensada para reggaetón: todos los envíos, reverbs, delays y procesos en paralelo ya creados y nivelados. Arrastras tu toma, la mandas a los sends y tienes el ambiente listo.",

@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import { Analytics } from "@vercel/analytics/next"
 import Link from "next/link";
 import { PRODUCTOS } from "../data/productos";
+import { DISCOGRAFIA } from "../data/discografia";
 
 /* ----------------------- logo 3D (paquete "3dsvg") ----------------------- */
 /*  <SVG3D> extruye un SVG a 3D en el navegador (usa WebGL). En Next.js debe */
@@ -311,7 +312,7 @@ function ProductCard({ badge, title, price, cover, slug, delay, onBuy }) {
   );
 }
 
-/* ---- Ventana emergente "Info" de cada producto de la tienda ---- YA SE PUEDE BORRAR NO SE ESTA USANDO LA FUNCION ProductModal */
+/* ---- Ventana emergente "Info" de cada producto de la tienda ---- */
 function ProductModal({ product, onClose, onBuy }) {
   useEffect(() => {
     if (!product) return;
@@ -525,6 +526,63 @@ function ServiceCard({ title, price, per, bullets, featured, badge, link, delay 
   );
 }
 /* --------------------------- A/B player --------------------------- */
+function CarruselDiscografia({ items }) {
+  // se duplica la lista para que el bucle sea continuo y sin saltos
+  const loop = [...items, ...items];
+  const dur = Math.max(items.length * 3, 30); // segundos por vuelta
+
+  return (
+    <div className="smx-disco">
+      <style>{`
+        .smx-disco{
+          overflow:hidden;position:relative;
+          -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);
+          mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);
+        }
+        .smx-disco__track{display:flex;width:max-content;animation:smxdisco 90s linear infinite;}
+        .smx-disco:hover .smx-disco__track{animation-play-state:paused;}
+        @keyframes smxdisco{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+        .smx-disco__card{flex:none;width:178px;margin-right:18px;text-decoration:none;}
+        .smx-disco__art{
+          width:178px;height:178px;border-radius:14px;overflow:hidden;
+          border:1px solid ${C.line};background:linear-gradient(150deg,#2A211A,#17120E);
+        }
+        .smx-disco__art img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
+        .smx-disco__card:hover .smx-disco__art img{transform:scale(1.06);}
+        @media(max-width:560px){
+          .smx-disco__card,.smx-disco__art{width:138px;}
+          .smx-disco__art{height:138px;}
+        }
+      `}</style>
+      <div className="smx-disco__track" style={{ animationDuration: `${dur}s` }}>
+        {loop.map((t, i) => (
+          <a key={i} className="smx-disco__card" href={t.url || "#"} target="_blank" rel="noopener noreferrer">
+            <div className="smx-disco__art">
+              {t.cover && (
+                <img
+                  src={t.cover.replace("ab67616d00004851", "ab67616d00001e02")}
+                  alt={t.titulo}
+                  loading="lazy"
+                />
+              )}
+            </div>
+            <div style={{ marginTop: 10 }}>
+              <div style={{
+                fontFamily: F.display, fontWeight: 700, fontSize: 13.5, color: C.text,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+              }}>{t.titulo}</div>
+              <div style={{
+                fontFamily: F.mono, fontSize: 11, color: C.muted,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+              }}>{t.artista}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ABPlayer() {
   const [track, setTrack] = useState(0);
   const [mode, setMode] = useState("master"); // master por defecto
@@ -1273,6 +1331,29 @@ export default function SadocmixHome() {
           }}>
             Cuéntame el proyecto <ArrowRight size={18} />
           </button>
+        </Reveal>
+      </section>
+
+      {/* ---------------- DISCOGRAFÍA ---------------- */}
+      <section id="discografia" style={{ padding: "clamp(60px,8vw,110px) 0", background: C.bg2, borderTop: `1px solid ${C.line}` }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 clamp(16px,3vw,28px)" }}>
+          <Reveal><Kicker>Discografía</Kicker></Reveal>
+          <Reveal delay={60} style={{
+            display: "flex", justifyContent: "space-between", alignItems: "flex-end",
+            flexWrap: "wrap", gap: 14, marginTop: 14, marginBottom: 36,
+          }}>
+            <h2 style={{
+              fontFamily: F.display, fontWeight: 800, fontSize: "clamp(32px,4.5vw,56px)",
+              letterSpacing: "-.02em", color: C.text,
+            }}>Canciones que han pasado por mis manos.</h2>
+            <a href="https://open.spotify.com/playlist/0fV3niuqPcctoORtFnut27" target="_blank" rel="noreferrer" style={{
+              fontFamily: F.mono, fontSize: 13, color: C.orange, cursor: "pointer", textDecoration: "none",
+              display: "flex", alignItems: "center", gap: 6,
+            }}>Ver la playlist completa <ArrowUpRight size={15} /></a>
+          </Reveal>
+        </div>
+        <Reveal delay={120}>
+          <CarruselDiscografia items={DISCOGRAFIA} />
         </Reveal>
       </section>
 

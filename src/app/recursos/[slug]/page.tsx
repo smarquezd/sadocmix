@@ -12,7 +12,7 @@
 
 import { use, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Play, Pause, ArrowLeft, ArrowRight, Check, Headphones } from "lucide-react";
+import { Play, Pause, ArrowLeft, ArrowRight, Check, Headphones, ChevronDown } from "lucide-react";
 import { getProducto } from "../../../data/productos";
 
 /* --- paleta y tipografías (mismas que la home) --- */
@@ -189,9 +189,70 @@ function ABDemo({ before, after }) {
   );
 }
 
+/* --------- desplegable para elegir el DAW del producto --------- */
+function DawPicker({ daws, value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  const sel = daws[value] || daws[0];
+
+  return (
+    <div ref={ref} style={{ position: "relative", width: "100%", maxWidth: 320 }}>
+      <button type="button" onClick={() => setOpen((o) => !o)} style={{
+        width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+        gap: 12, cursor: "pointer", padding: "13px 16px", borderRadius: 12,
+        background: C.card, border: `1px solid ${open ? C.orange : C.lineHi}`,
+        color: C.text, fontFamily: F.display, fontWeight: 600, fontSize: 14.5,
+        transition: "border-color .2s ease",
+      }}>
+        {sel ? sel.nombre : "Selecciona un DAW"}
+        <ChevronDown size={17} color={C.muted} style={{
+          flex: "none", transition: "transform .2s ease",
+          transform: open ? "rotate(180deg)" : "none",
+        }} />
+      </button>
+
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, zIndex: 20,
+          background: C.cardHi, border: `1px solid ${C.lineHi}`, borderRadius: 12,
+          overflow: "hidden", boxShadow: "0 20px 44px -16px rgba(0,0,0,.7)",
+        }}>
+          {daws.map((d, i) => {
+            const activo = i === value;
+            return (
+              <button key={i} type="button" onClick={() => { onChange(i); setOpen(false); }} style={{
+                width: "100%", textAlign: "left", cursor: "pointer",
+                padding: "12px 16px", border: "none",
+                borderTop: i === 0 ? "none" : `1px solid ${C.line}`,
+                background: activo ? "rgba(232,96,10,.14)" : "transparent",
+                color: activo ? C.orangeHi : C.text,
+                fontFamily: F.display, fontWeight: 600, fontSize: 14,
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+              }}>
+                {d.nombre}
+                {activo && <Check size={15} color={C.orange} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ============================== PÁGINA ============================== */
 export default function Page({ params }) {
   const { slug } = use(params);
+  const [dawIdx, setDawIdx] = useState(0);
   const producto = getProducto(slug);
 
   /* --- producto inexistente --- */
@@ -214,13 +275,20 @@ export default function Page({ params }) {
 
   const {
     badge, title, price, cover, comprarLink, tagline, descripcionLarga,
-    puntos, plugins, requisitos, incluye, demoAntes, demoDespues, video,
+    puntos, plugins, requisitos, incluye, demoAntes, demoDespues, video, daws,
   } = producto;
   const free = price === "Gratis";
   const tieneDemo = demoAntes && demoDespues;
   const embed = toEmbed(video);
+  const tieneDaws = daws && daws.length > 0;
+  const dawSel = tieneDaws ? daws[dawIdx] : null;
+  // según el DAW elegido: su enlace, sus requisitos y su "qué incluye"
+  // (si el DAW no define alguno, se usa el general del producto)
+  const linkActivo = tieneDaws ? (dawSel && dawSel.comprarLink) : comprarLink;
+  const reqActivo = (dawSel && dawSel.requisitos) || requisitos;
+  const incluyeActivo = (dawSel && dawSel.incluye) || incluye;
 
-  /* botón de compra: enlace si hay comprarLink, si no un botón simple */
+  /* botón de compra: usa el enlace del DAW elegido (o el general) */
   const compraBtnStyle = {
     display: "inline-flex", alignItems: "center", gap: 9,
     fontFamily: F.display, fontWeight: 700, fontSize: 15,
@@ -228,8 +296,8 @@ export default function Page({ params }) {
     padding: "15px 28px", borderRadius: 999, textDecoration: "none",
   };
   const CompraBtn = () =>
-    comprarLink ? (
-      <a className="rec-btn" href={comprarLink} target="_blank" rel="noopener noreferrer" style={compraBtnStyle}>
+    linkActivo ? (
+      <a className="rec-btn" href={linkActivo} target="_blank" rel="noopener noreferrer" style={compraBtnStyle}>
         {free ? "Descargar" : "Comprar ahora"} <ArrowRight size={17} />
       </a>
     ) : (
@@ -315,6 +383,15 @@ export default function Page({ params }) {
               }}>{title}</h1>
               {tagline && (
                 <p style={{ fontFamily: F.body, fontSize: 16, lineHeight: 1.55, color: C.muted }}>{tagline}</p>
+              )}
+              {tieneDaws && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 9, marginTop: 4 }}>
+                  <span style={{
+                    fontFamily: F.mono, fontSize: 11, letterSpacing: ".12em",
+                    textTransform: "uppercase", color: C.cream2,
+                  }}>Elige tu programa (DAW)</span>
+                  <DawPicker daws={daws} value={dawIdx} onChange={setDawIdx} />
+                </div>
               )}
               <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap", marginTop: 4 }}>
                 <span style={{
@@ -408,17 +485,17 @@ export default function Page({ params }) {
       </Block>
 
       {/* ---------------- qué incluye + requisitos ---------------- */}
-      {((incluye && incluye.length) || requisitos) && (
+      {((incluyeActivo && incluyeActivo.length) || reqActivo) && (
         <Block eyebrow="Antes de comprar" title="Qué incluye y qué necesitas" bg={C.bg2}>
           <div className="rec-cols">
-            {incluye && incluye.length > 0 && (
+            {incluyeActivo && incluyeActivo.length > 0 && (
               <div>
                 <div style={{
                   fontFamily: F.mono, fontSize: 11, letterSpacing: ".14em",
                   textTransform: "uppercase", color: C.cream2, marginBottom: 14,
                 }}>Qué incluye</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
-                  {incluye.map((it, i) => (
+                  {incluyeActivo.map((it, i) => (
                     <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
                       <Check size={17} color={C.orange} style={{ marginTop: 2, flex: "none" }} />
                       <span style={{ fontFamily: F.body, fontSize: 14.5, color: C.muted }}>{it}</span>
@@ -427,14 +504,14 @@ export default function Page({ params }) {
                 </div>
               </div>
             )}
-            {requisitos && (
+            {reqActivo && (
               <div>
                 <div style={{
                   fontFamily: F.mono, fontSize: 11, letterSpacing: ".14em",
                   textTransform: "uppercase", color: C.cream2, marginBottom: 14,
                 }}>Requisitos</div>
                 <p style={{ fontFamily: F.body, fontSize: 14.5, lineHeight: 1.6, color: C.muted }}>
-                  {requisitos}
+                  {reqActivo}
                 </p>
               </div>
             )}
@@ -456,6 +533,11 @@ export default function Page({ params }) {
           <span style={{ fontFamily: F.display, fontWeight: 800, fontSize: 32, color: free ? C.orange : C.text }}>
             {price}
           </span>
+          {tieneDaws && (
+            <div style={{ width: "100%", maxWidth: 320 }}>
+              <DawPicker daws={daws} value={dawIdx} onChange={setDawIdx} />
+            </div>
+          )}
           <CompraBtn />
         </div>
       </section>
