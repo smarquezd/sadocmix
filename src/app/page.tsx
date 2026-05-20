@@ -539,7 +539,7 @@ function CarruselDiscografia({ items }) {
     singleWidth: 0,
     lastTime: 0,
   });
-  const SPEED = 35; // px/segundo de auto-scroll
+  const SPEED = 15; // px/segundo de auto-scroll
 
   useEffect(() => {
     const el = scrollerRef.current;
