@@ -527,57 +527,204 @@ function ServiceCard({ title, price, per, bullets, featured, badge, link, delay 
 }
 /* --------------------------- A/B player --------------------------- */
 function CarruselDiscografia({ items }) {
-  // se duplica la lista para que el bucle sea continuo y sin saltos
-  const loop = [...items, ...items];
-  const dur = Math.max(items.length * 3, 30); // segundos por vuelta
+  // Triplicamos la lista para que el desplazamiento manual sea infinito en ambos sentidos.
+  const loop = [...items, ...items, ...items];
+  const scrollerRef = useRef(null);
+  const stateRef = useRef({
+    mouseOver: false,
+    dragging: false,
+    touchActive: false,
+    lastX: 0,
+    moved: 0,
+    singleWidth: 0,
+    lastTime: 0,
+  });
+  const SPEED = 35; // px/segundo de auto-scroll
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const s = stateRef.current;
+    s.lastTime = performance.now();
+    let raf = 0;
+
+    const measure = () => {
+      s.singleWidth = el.scrollWidth / 3;
+      // arrancar en la copia del medio (para tener margen a ambos lados)
+      if (el.scrollLeft < s.singleWidth - 5 || el.scrollLeft > 2 * s.singleWidth + 5) {
+        el.scrollLeft = s.singleWidth;
+      }
+    };
+    requestAnimationFrame(measure);
+    window.addEventListener("resize", measure);
+
+    const tick = (t) => {
+      const dt = Math.min((t - s.lastTime) / 1000, 0.1);
+      s.lastTime = t;
+      if (s.singleWidth > 0) {
+        if (!s.mouseOver && !s.dragging && !s.touchActive) {
+          el.scrollLeft += SPEED * dt;
+        }
+        // bucle infinito invisible: mantener scrollLeft dentro de la copia del medio
+        if (el.scrollLeft >= 2 * s.singleWidth) {
+          el.scrollLeft -= s.singleWidth;
+        } else if (el.scrollLeft < s.singleWidth) {
+          el.scrollLeft += s.singleWidth;
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  const onMouseEnter = () => { stateRef.current.mouseOver = true; };
+  const onMouseLeave = () => { stateRef.current.mouseOver = false; };
+
+  const onPointerDown = (e) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const s = stateRef.current;
+    if (e.pointerType === "mouse") {
+      s.dragging = true;
+      s.lastX = e.clientX;
+      s.moved = 0;
+      try { el.setPointerCapture(e.pointerId); } catch {}
+      el.style.cursor = "grabbing";
+    } else {
+      // táctil / lápiz: pausa auto-scroll, deja al navegador hacer el scroll nativo
+      s.touchActive = true;
+    }
+  };
+  const onPointerMove = (e) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const s = stateRef.current;
+    if (s.dragging && e.pointerType === "mouse") {
+      const dx = e.clientX - s.lastX;
+      s.lastX = e.clientX;
+      s.moved += Math.abs(dx);
+      el.scrollLeft -= dx;
+    }
+  };
+  const onPointerUp = (e) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const s = stateRef.current;
+    if (e.pointerType === "mouse") {
+      s.dragging = false;
+      try { el.releasePointerCapture(e.pointerId); } catch {}
+      el.style.cursor = "grab";
+    } else {
+      setTimeout(() => { s.touchActive = false; }, 1500);
+    }
+  };
+
+  // Evita que terminar un drag abra el enlace de Spotify
+  const onCardClick = (e) => {
+    if (stateRef.current.moved > 5) e.preventDefault();
+  };
+
+  // Flechas: avance/retroceso instantáneo (~2 cards)
+  const goLeft = () => {
+    const el = scrollerRef.current;
+    if (el) el.scrollLeft -= 420;
+  };
+  const goRight = () => {
+    const el = scrollerRef.current;
+    if (el) el.scrollLeft += 420;
+  };
 
   return (
-    <div className="smx-disco">
+    <div className="smx-disco" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <style>{`
-        .smx-disco{
-          overflow:hidden;position:relative;
+        .smx-disco{position:relative;}
+        .smx-disco__scroller{
+          overflow-x:auto;overflow-y:hidden;
           -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);
           mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);
+          scrollbar-width:none;cursor:grab;user-select:none;touch-action:pan-x;
         }
-        .smx-disco__track{display:flex;width:max-content;animation:smxdisco 90s linear infinite;}
-        .smx-disco:hover .smx-disco__track{animation-play-state:paused;}
-        @keyframes smxdisco{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+        .smx-disco__scroller::-webkit-scrollbar{display:none;}
+        .smx-disco__track{display:flex;width:max-content;padding:4px 0;}
         .smx-disco__card{flex:none;width:178px;margin-right:18px;text-decoration:none;}
         .smx-disco__art{
           width:178px;height:178px;border-radius:14px;overflow:hidden;
           border:1px solid ${C.line};background:linear-gradient(150deg,#2A211A,#17120E);
         }
-        .smx-disco__art img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
+        .smx-disco__art img{
+          width:100%;height:100%;object-fit:cover;display:block;
+          transition:transform .4s ease;pointer-events:none;
+        }
         .smx-disco__card:hover .smx-disco__art img{transform:scale(1.06);}
-        @media(max-width:560px){
+        .smx-disco__btn{
+          position:absolute;top:40%;transform:translateY(-50%);z-index:3;
+          width:44px;height:44px;border-radius:50%;border:1px solid ${C.lineHi};
+          background:rgba(15,11,8,.72);
+          backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+          color:${C.cream};cursor:pointer;
+          display:flex;align-items:center;justify-content:center;
+          transition:background .2s ease,color .2s ease,border-color .2s ease;
+        }
+        .smx-disco__btn:hover{background:${C.orange};color:${C.ink};border-color:${C.orange};}
+        .smx-disco__btn--left{left:14px;}
+        .smx-disco__btn--right{right:14px;}
+        @media(max-width:640px){
           .smx-disco__card,.smx-disco__art{width:138px;}
           .smx-disco__art{height:138px;}
+          .smx-disco__btn{display:none;}
         }
       `}</style>
-      <div className="smx-disco__track" style={{ animationDuration: `${dur}s` }}>
-        {loop.map((t, i) => (
-          <a key={i} className="smx-disco__card" href={t.url || "#"} target="_blank" rel="noopener noreferrer">
-            <div className="smx-disco__art">
-              {t.cover && (
-                <img
-                  src={t.cover.replace("ab67616d00004851", "ab67616d00001e02")}
-                  alt={t.titulo}
-                  loading="lazy"
-                />
-              )}
-            </div>
-            <div style={{ marginTop: 10 }}>
-              <div style={{
-                fontFamily: F.display, fontWeight: 700, fontSize: 13.5, color: C.text,
-                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-              }}>{t.titulo}</div>
-              <div style={{
-                fontFamily: F.mono, fontSize: 11, color: C.muted,
-                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-              }}>{t.artista}</div>
-            </div>
-          </a>
-        ))}
+
+      <button className="smx-disco__btn smx-disco__btn--left" aria-label="Anterior" onClick={goLeft}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <button className="smx-disco__btn smx-disco__btn--right" aria-label="Siguiente" onClick={goRight}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+
+      <div ref={scrollerRef}
+           className="smx-disco__scroller"
+           onPointerDown={onPointerDown}
+           onPointerMove={onPointerMove}
+           onPointerUp={onPointerUp}
+           onPointerCancel={onPointerUp}>
+        <div className="smx-disco__track">
+          {loop.map((t, i) => (
+            <a key={i} className="smx-disco__card" href={t.url || "#"}
+               target="_blank" rel="noopener noreferrer"
+               draggable={false} onClick={onCardClick}>
+              <div className="smx-disco__art">
+                {t.cover && (
+                  <img
+                    src={t.cover.replace("ab67616d00004851", "ab67616d00001e02")}
+                    alt={t.titulo}
+                    loading="lazy"
+                    draggable={false}
+                  />
+                )}
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <div style={{
+                  fontFamily: F.display, fontWeight: 700, fontSize: 13.5, color: C.text,
+                  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                }}>{t.titulo}</div>
+                <div style={{
+                  fontFamily: F.mono, fontSize: 11, color: C.muted,
+                  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                }}>{t.artista}</div>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );
