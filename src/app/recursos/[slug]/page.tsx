@@ -17,15 +17,15 @@ import { getProducto } from "../../../data/productos";
 
 /* --- paleta y tipografías (mismas que la home) --- */
 const C = {
-  bg: "#17120E", bg2: "#1E1813", card: "#221B15", cardHi: "#2A211A",
-  cream: "#F2E9DB", cream2: "#E7DAC4", ink: "#16110C", text: "#F4ECE0",
-  muted: "#A89B89", faint: "#6E6357", orange: "#E8600A", orangeHi: "#FF7E2B",
-  line: "rgba(244,236,224,0.12)", lineHi: "rgba(244,236,224,0.22)",
+  bg: "#000000", bg2: "rgba(255,255,255,0.018)", card: "#0E0D0C", cardHi: "#161413",
+  cream: "#F3EFE8", cream2: "#D8D2C8", ink: "#0A0807", text: "#F4F1EC",
+  muted: "#988F86", faint: "#5E574F", orange: "#E8600A", orangeHi: "#FF7E2B",
+  line: "rgba(255,255,255,0.10)", lineHi: "rgba(255,255,255,0.20)",
 };
 const F = {
-  display: "'Bricolage Grotesque', sans-serif",
-  body: "'Hanken Grotesk', sans-serif",
-  mono: "'DM Mono', monospace",
+  display: "'Space Grotesk', system-ui, sans-serif",
+  body: "'Inter', system-ui, sans-serif",
+  mono: "'DM Mono', ui-monospace, monospace",
 };
 
 /* Isotipo de la marca como SVG en línea */
@@ -309,7 +309,7 @@ export default function Page({ params }) {
   return (
     <div style={{ background: C.bg, color: C.text, fontFamily: F.body, minHeight: "100vh" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
         *{box-sizing:border-box;}
         body{margin:0;}
         .rec-hero{display:grid;gap:30px;grid-template-columns:1fr;}
@@ -326,7 +326,7 @@ export default function Page({ params }) {
       {/* ---------------- header ---------------- */}
       <header style={{
         position: "sticky", top: 0, zIndex: 40,
-        background: "rgba(23,18,14,.86)", backdropFilter: "blur(10px)",
+        background: "rgba(6,6,7,.72)", backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(10px)", borderBottom: `1px solid ${C.line}`,
       }}>
         <div style={{
@@ -360,7 +360,7 @@ export default function Page({ params }) {
               <div style={{
                 position: "relative", aspectRatio: "1 / 1", borderRadius: 22, overflow: "hidden",
                 border: `1px solid ${C.lineHi}`,
-                background: "linear-gradient(150deg,#2A211A,#17120E)",
+                background: "linear-gradient(150deg,#161413,#000000)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 boxShadow: "0 40px 80px -28px rgba(0,0,0,.8)",
               }}>
