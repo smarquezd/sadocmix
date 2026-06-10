@@ -211,6 +211,28 @@ function CountUp({ value, duration = 1500 }) {
   return <span ref={ref}>{display}</span>;
 }
 
+/* Wordmark: pinta un PNG cuyo texto está centrado en un lienzo con mucho aire,
+   recortando ese aire con una "ventana" para dimensionarlo por el alto real del
+   texto. cy/h son fracciones del bbox del texto (medidas del propio PNG). */
+const WORDMARK_META = {
+  "/img/trusted-by.png": { cy: 0.536, h: 0.057 },
+  "/img/ab-player.png": { cy: 0.541, h: 0.070 },
+};
+function Wordmark({ src, alt, textH = 14, opacity = 0.85, className }) {
+  const m = WORDMARK_META[src] || { cy: 0.5, h: 0.1 };
+  const imgH = textH / m.h;
+  const win = Math.round(textH * 2.2);
+  const mt = Math.round(win / 2 - m.cy * imgH);
+  return (
+    <div className={className} style={{ height: win, overflow: "hidden" }}>
+      <img src={src} alt={alt} draggable={false} style={{
+        height: imgH, width: "auto", display: "block",
+        marginLeft: "auto", marginRight: "auto", marginTop: mt, opacity,
+      }} />
+    </div>
+  );
+}
+
 /* Banda "Trusted by": logos monocromos que se desplazan lento, se pausan al
    pasar el ratón y se iluminan al hacer hover (estilo placementchasers). */
 function TrustedBy({ items }) {
@@ -218,13 +240,11 @@ function TrustedBy({ items }) {
   const base = items.length < 8 ? [...items, ...items] : items;
   const row = [...base, ...base];
   return (
-    <section style={{ padding: "34px 0 38px" }}>
-      <div style={{
-        textAlign: "center", fontFamily: F.mono, fontSize: 11.5, letterSpacing: ".26em",
-        textTransform: "uppercase", color: C.faint, marginBottom: 24,
-      }}>
-        Trusted by
-      </div>
+    <section style={{
+      padding: "34px 0 38px", background: C.bg2,
+      borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}`,
+    }}>
+      <Wordmark src="/img/trusted-by.png" alt="Trusted by" textH={21} opacity={0.7} style={{ marginBottom: 52 }} />
       <div className="smx-trust">
         <div className="smx-trust__track">
           {row.map((it, i) => (
@@ -1271,7 +1291,22 @@ export default function SadocmixHome() {
         @keyframes smxdust{0%{transform:translate3d(0,0,0);opacity:0;}10%{opacity:.85;}55%{opacity:.5;}100%{transform:translate3d(var(--dx,10px),-62vh,0);opacity:0;}}
         .smx-float{animation:smxfloat 5.5s ease-in-out infinite alternate;}
         @keyframes smxfloat{from{transform:translateY(0);}to{transform:translateY(-8px);}}
-        @media(prefers-reduced-motion:reduce){.smx-glow,.smx-dust span,.smx-float{animation:none!important;}}
+        .smx-urban{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.55;
+          background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.6px);background-size:6px 6px;
+          -webkit-mask-image:radial-gradient(ellipse 78% 72% at 50% 46%,#000 32%,transparent 80%);
+          mask-image:radial-gradient(ellipse 78% 72% at 50% 46%,#000 32%,transparent 80%);}
+        .smx-urban--stripes{opacity:.45;background-image:repeating-linear-gradient(135deg,rgba(232,96,10,.06) 0 2px,transparent 2px 10px);
+          -webkit-mask-image:linear-gradient(180deg,transparent,#000 28%,#000 72%,transparent);
+          mask-image:linear-gradient(180deg,transparent,#000 28%,#000 72%,transparent);}
+        .smx-spotlight{position:absolute;left:50%;top:-12%;width:130%;height:85%;transform:translateX(-50%);pointer-events:none;z-index:0;
+          background:radial-gradient(50% 62% at 50% 0%,rgba(232,96,10,.16),transparent 70%);animation:smxspot 7s ease-in-out infinite;}
+        @keyframes smxspot{0%,100%{opacity:.55;transform:translateX(-50%) scale(1);}50%{opacity:1;transform:translateX(-50%) scale(1.07);}}
+        .smx-playerwrap{position:relative;isolation:isolate;}
+        .smx-playerwrap::before{content:"";position:absolute;inset:-1px;border-radius:30px;z-index:-1;
+          background:linear-gradient(120deg,rgba(232,96,10,.55),transparent 38%,transparent 62%,rgba(232,96,10,.35));
+          filter:blur(16px);animation:smxpglow 6s ease-in-out infinite;}
+        @keyframes smxpglow{0%,100%{opacity:.3;}50%{opacity:.65;}}
+        @media(prefers-reduced-motion:reduce){.smx-glow,.smx-dust span,.smx-float,.smx-spotlight,.smx-playerwrap::before{animation:none!important;}}
         .smx-playergrid{grid-template-columns:1fr;}
         @media(min-width:860px){.smx-playergrid{grid-template-columns:230px 1fr;}}
       `}</style>
@@ -1343,7 +1378,9 @@ export default function SadocmixHome() {
           {Array.from({ length: 30 }).map((_, i) => {
             const left = (i * 97 + 11) % 100;            // repartidas a lo ancho
             const dur = 13 + (i * 7) % 13;               // 13–25 s
-            const delay = (i * 5) % 20;                  // 0–19 s
+            // delay NEGATIVO: cada mota arranca ya avanzada en su ciclo, así al
+            // cargar la página el polvo aparece repartido por toda la altura.
+            const delay = -((i * 11 + 4) % dur);
             const dx = (i % 2 ? -1 : 1) * (8 + (i * 13) % 22); // ±8–30 px
             const s = 1.5 + (i % 3) * 0.5;               // 1.5 / 2 / 2.5 px
             return (
@@ -1383,19 +1420,19 @@ export default function SadocmixHome() {
               </p>
             </Reveal>
             <Reveal delay={220} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
-              <button onClick={() => go("servicios")} className="smx-btn smx-magnetic" style={{
+              <button onClick={() => go("player")} className="smx-btn smx-magnetic" style={{
                 fontFamily: F.display, fontWeight: 600, fontSize: 15, color: C.ink, background: C.orange,
                 border: "none", padding: "15px 26px", borderRadius: 999, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 9,
               }}>
-                Ver servicios <ArrowRight size={17} />
+                <Play size={17} fill={C.ink} /> Escuchar el A/B
               </button>
-              <button onClick={() => go("player")} className="smx-btn smx-magnetic" style={{
+              <button onClick={() => go("servicios")} className="smx-btn smx-magnetic" style={{
                 fontFamily: F.display, fontWeight: 600, fontSize: 15, color: C.text, background: "transparent",
                 border: `1.5px solid ${C.lineHi}`, padding: "15px 26px", borderRadius: 999, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 9,
               }}>
-                <Play size={17} fill={C.text} /> Escuchar el A/B
+                Ver servicios <ArrowRight size={17} />
               </button>
             </Reveal>
             <Reveal delay={300} style={{
@@ -1471,7 +1508,7 @@ export default function SadocmixHome() {
             marginTop: 42, background: C.line, border: `1px solid ${C.line}`,
             borderRadius: 22, overflow: "hidden",
           }} className="smx-stats">
-            {[["10", "Certificaciones"], ["1.2B+", "Streams"], ["230+", "Artistas"]].map(([n, l]) => (
+            {[["11", "Certificaciones"], ["1.2B+", "Streams"], ["230+", "Artistas"]].map(([n, l]) => (
               <div key={l} style={{ background: C.bg, padding: "26px 24px" }}>
                 <div style={{ fontFamily: F.display, fontWeight: 800, fontSize: "clamp(30px,3.5vw,46px)", color: C.orange }}>
                   <CountUp value={n} />
@@ -1503,13 +1540,22 @@ export default function SadocmixHome() {
       </section>
 
       {/* ---------------- A/B PLAYER ---------------- */}
-      <section id="player" style={{ padding: "clamp(40px,6vw,80px) clamp(16px,3vw,28px)", background: C.bg2, borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto" }}>
-          <Reveal style={{ textAlign: "center" }}><Kicker>A/B Player</Kicker></Reveal>
+      <section id="player" className="smx-player-sec" style={{
+        padding: "clamp(48px,6vw,90px) clamp(16px,3vw,28px)", background: C.bg2,
+        borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}`,
+        position: "relative", overflow: "hidden",
+      }}>
+        <div className="smx-urban" aria-hidden="true" />
+        <div className="smx-urban smx-urban--stripes" aria-hidden="true" />
+        <div className="smx-spotlight" aria-hidden="true" />
+        <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <Reveal style={{ display: "flex", justifyContent: "center" }}>
+            <Wordmark src="/img/ab-player.png" alt="A/B Player" textH={32} opacity={0.85} />
+          </Reveal>
           <Reveal delay={60}>
             <h2 style={{
               fontFamily: F.display, fontWeight: 800, fontSize: "clamp(32px,4.5vw,56px)",
-              letterSpacing: "-.02em", color: C.text, textAlign: "center", marginTop: 12,
+              letterSpacing: "-.02em", color: C.text, textAlign: "center", marginTop: 14,
             }}>
               Escucha la diferencia.
             </h2>
@@ -1524,7 +1570,7 @@ export default function SadocmixHome() {
               Las dos versiones suenan en paralelo, perfectamente sincronizadas.
             </p>
           </Reveal>
-          <Reveal delay={160}><ABPlayer /></Reveal>
+          <Reveal delay={160}><div className="smx-playerwrap"><ABPlayer /></div></Reveal>
         </div>
       </section>
 
@@ -1547,7 +1593,7 @@ export default function SadocmixHome() {
           </Reveal>
         </div>
         <Reveal delay={120}>
-          <CarruselDiscografia items={DISCOGRAFIA} />
+          <CarruselDiscografia items={DISCOGRAFIA.slice(0, 20)} />
         </Reveal>
       </section>
 
