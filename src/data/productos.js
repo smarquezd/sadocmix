@@ -31,7 +31,7 @@ export const PRODUCTOS = [
     badge: "Vocal Chain",
     title: "Cadena Vocal — Beele",
     price: "19€",
-    cover: "",
+    cover: "/img/productos/cadena-vocal-beele.png",
     comprarLink: "",
     // Versiones por DAW. Cada una con su enlace de pago/descarga, sus requisitos
     // y su lista de "qué incluye" — la página se actualiza al elegir el DAW.

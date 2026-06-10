@@ -39,36 +39,12 @@ function IsotipoMark({ size = 22, color = "#E8600A" }) {
 
 const ISOTIPO_3D_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="332.63 68.05 176.63 220.74"><path d="M495.26,145.75L495.26,145.75L379.4,226.01c-13.85,9.59-32.77-0.32-32.77-17.16v0l115.86-80.26C476.34,119,495.26,128.91,495.26,145.75z"/><path d="M401.4,234.34l93.86-65.02v15.21c0,15.44-7.57,29.9-20.27,38.69l-74.44,51.57L401.4,234.34z"/><path d="M439.99,122.5l-93.36,64.67v-15.21c0-15.44,7.57-29.9,20.27-38.69l73.94-51.22L439.99,122.5z"/></svg>`;
 
-/* Logo 3D del hero: gira sobre su propio eje Y según el scroll de la página.
-   Al bajar gira hacia un lado y al subir vuelve girando a su punto inicial.
-   Le pasamos `rotationY` al motor 3D (en radianes); el componente lo suaviza
-   solo. No tocamos el contenedor con CSS, así el lienzo no se reescala. */
+/* Logo 3D del hero: "mira" suavemente hacia el cursor. Usamos el cursorOrbit
+   nativo del motor (sigue el ratón en toda la ventana y amortigua solo).
+   `orbitStrength` controla cuánto gira (radianes máx.); subir = más giro.
+   Ojo: interactive debe ir en true o el motor apaga cursorOrbit; draggable
+   en false para que no se pueda arrastrar. */
 function HeroLogo3D() {
-  const [rotationY, setRotationY] = useState(0);
-
-  useEffect(() => {
-    // SPIN = giro total en radianes al recorrer toda la página.
-    // Math.PI * 2 = una vuelta completa. Para un giro más leve: Math.PI (media
-    // vuelta) o Math.PI / 3 (giro ligero). Cámbialo a tu gusto.
-    const SPIN = - Math.PI * 7;
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
-      setRotationY(progress * SPIN);
-    };
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-
   return (
     <div style={{ width: "min(400px, 82vw)", height: "min(400px, 82vw)" }}>
       <SVG3D
@@ -76,13 +52,18 @@ function HeroLogo3D() {
         depth={0.9}
         smoothness={0.4}
         color="#ffffff"
-        material="emissive"
+        material="metal"
         metalness={0.9}
-        roughness={0.2}
+        roughness={0.25}
+        lightIntensity={1.7}
+        ambientIntensity={0.55}
         animate="none"
-        interactive={false}
-        cursorOrbit={false}
-        rotationY={rotationY}
+        interactive={true}
+        cursorOrbit={true}
+        orbitStrength={0.5}
+        draggable={false}
+        scrollZoom={false}
+        rotationY={0}
         zoom={7}
       />
     </div>
@@ -184,11 +165,13 @@ function StudioGlows() {
    public/img/trusted/ y añade su ruta en `logo`. Si solo pones `name`, se
    pinta el nombre como wordmark. Los logos se monocroman a blanco solos. */
 const TRUSTED = [
-  { name: "Warner Music", logo: "/img/trusted/warner.png" },
-  { name: "Sony Music", logo: "/img/trusted/sony.png" },
-  { name: "Universal Music", logo: "/img/trusted/universal.svg" },
-  { name: "La Industria Inc.", logo: "/img/trusted/la-industria.png" },
-  { name: "Rabatt", logo: "/img/trusted/rabatt.png" },
+  // `scale` compensa el relleno interno de cada PNG para igualar el peso visual.
+  // `dy` desplaza en vertical (px) los lienzos cuyo contenido no está centrado.
+  { name: "Warner Music", logo: "/img/trusted/warner.png", scale: 1.1 },
+  { name: "Sony Music", logo: "/img/trusted/sony.png", scale: 0.8 },
+  { name: "Universal Music", logo: "/img/trusted/universal.png", scale: 1.3, dy: 8 },
+  { name: "La Industria Inc.", logo: "/img/trusted/la-industria.png", scale: 1.05 },
+  { name: "Rabatt", logo: "/img/trusted/rabatt.png", scale: 1.45 },
 ];
 
 /* Cuenta ascendente: anima de 0 al número cuando entra en pantalla.
@@ -235,10 +218,7 @@ function TrustedBy({ items }) {
   const base = items.length < 8 ? [...items, ...items] : items;
   const row = [...base, ...base];
   return (
-    <section style={{
-      borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}`,
-      padding: "30px 0 34px", background: C.bg2,
-    }}>
+    <section style={{ padding: "34px 0 38px" }}>
       <div style={{
         textAlign: "center", fontFamily: F.mono, fontSize: 11.5, letterSpacing: ".26em",
         textTransform: "uppercase", color: C.faint, marginBottom: 24,
@@ -250,7 +230,13 @@ function TrustedBy({ items }) {
           {row.map((it, i) => (
             <div key={i} className="smx-trust__item" aria-hidden={i >= items.length}>
               {it.logo ? (
-                <img src={it.logo} alt={it.name} loading="lazy" draggable={false} />
+                <img
+                  src={it.logo} alt={it.name} loading="lazy" draggable={false}
+                  style={{
+                    width: `${(it.scale || 1) * 100}%`, height: `${(it.scale || 1) * 100}%`,
+                    transform: it.dy ? `translateY(${it.dy}px)` : undefined,
+                  }}
+                />
               ) : (
                 <span>{it.name}</span>
               )}
@@ -634,7 +620,7 @@ function CarruselDiscografia({ items }) {
     singleWidth: 0,
     lastTime: 0,
   });
-  const SPEED = 38; // px/segundo de auto-scroll
+  const SPEED = 64; // px/segundo de auto-scroll
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -746,9 +732,9 @@ function CarruselDiscografia({ items }) {
         }
         .smx-disco__scroller::-webkit-scrollbar{display:none;}
         .smx-disco__track{display:flex;width:max-content;padding:4px 0;}
-        .smx-disco__card{flex:none;width:178px;margin-right:18px;text-decoration:none;}
+        .smx-disco__card{flex:none;width:148px;margin-right:16px;text-decoration:none;}
         .smx-disco__art{
-          width:178px;height:178px;border-radius:14px;overflow:hidden;
+          width:148px;height:148px;border-radius:14px;overflow:hidden;
           border:1px solid ${C.line};background:linear-gradient(150deg,#161413,#000000);
         }
         .smx-disco__art img{
@@ -769,8 +755,8 @@ function CarruselDiscografia({ items }) {
         .smx-disco__btn--left{left:14px;}
         .smx-disco__btn--right{right:14px;}
         @media(max-width:640px){
-          .smx-disco__card,.smx-disco__art{width:138px;}
-          .smx-disco__art{height:138px;}
+          .smx-disco__card,.smx-disco__art{width:122px;}
+          .smx-disco__art{height:122px;}
           .smx-disco__btn{display:none;}
         }
       `}</style>
@@ -1149,6 +1135,29 @@ export default function SadocmixHome() {
     return () => { window.removeEventListener("mousemove", onMove); if (raf) cancelAnimationFrame(raf); };
   }, []);
 
+  // Tilt 3D: las tarjetas de palmarés y tienda se inclinan hacia el cursor.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(hover: none)").matches) return;
+    const els = Array.from(document.querySelectorAll(".smx-disccard, .smx-prodcard"));
+    const MAX = 7; // grados de inclinación máxima
+    const cleanups = els.map((el) => {
+      const move = (e) => {
+        const r = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transition = "transform .12s ease-out";
+        el.style.transform =
+          `perspective(780px) translateY(-6px) rotateX(${(-py * MAX).toFixed(2)}deg) rotateY(${(px * MAX).toFixed(2)}deg)`;
+      };
+      const leave = () => { el.style.transition = ""; el.style.transform = ""; };
+      el.addEventListener("mousemove", move);
+      el.addEventListener("mouseleave", leave);
+      return () => { el.removeEventListener("mousemove", move); el.removeEventListener("mouseleave", leave); };
+    });
+    return () => cleanups.forEach((fn) => fn());
+  }, []);
+
   // Botones magnéticos: los elementos .smx-magnetic se atraen hacia el cursor.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1178,7 +1187,7 @@ export default function SadocmixHome() {
   };
 
   const nav = [
-    ["Música", "musica"], ["Mix & Master", "player"], ["Recursos", "recursos"],
+    ["Música", "discografia"], ["Mix & Master", "player"], ["Recursos", "recursos"],
     ["Cursos", "recursos"], ["Servicios", "servicios"],
   ];
 
@@ -1211,10 +1220,9 @@ export default function SadocmixHome() {
         .smx-chip:hover{transform:translateY(-3px);border-color:rgba(232,96,10,.5);background:rgba(232,96,10,.08);}
         .smx-trust{overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);}
         .smx-trust__track{display:flex;width:max-content;align-items:center;animation:smxtrust 38s linear infinite;}
-        .smx-trust:hover .smx-trust__track{animation-play-state:paused;}
-        .smx-trust__item{flex:none;padding:0 clamp(26px,4.5vw,58px);opacity:.5;transition:opacity .3s ease,transform .3s ease;}
-        .smx-trust__item:hover{opacity:1;transform:scale(1.04);}
-        .smx-trust__item img{height:34px;width:auto;max-width:160px;object-fit:contain;display:block;filter:grayscale(1) brightness(0) invert(1);}
+        .smx-trust__item{flex:none;margin:0 clamp(24px,4vw,52px);width:clamp(76px,9vw,104px);height:clamp(76px,9vw,104px);display:flex;align-items:center;justify-content:center;opacity:.55;transition:opacity .3s ease;}
+        .smx-trust__item:hover{opacity:1;}
+        .smx-trust__item img{max-width:none;object-fit:contain;display:block;filter:grayscale(1) brightness(0) invert(1);}
         .smx-trust__item span{font-family:${F.display};font-weight:700;font-size:clamp(17px,2vw,22px);color:${C.text};white-space:nowrap;letter-spacing:.01em;}
         @keyframes smxtrust{to{transform:translateX(-50%);}}
         @media(prefers-reduced-motion:reduce){.smx-trust__track{animation:none!important;}[data-reveal]{filter:none;}}
@@ -1251,12 +1259,26 @@ export default function SadocmixHome() {
         @keyframes smxdriftA{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(9vw,7vh) scale(1.14);}}
         @keyframes smxdriftB{0%,100%{transform:translate(0,0) scale(1.06);}50%{transform:translate(-7vw,-5vh) scale(.92);}}
         @keyframes smxdriftC{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-6vw,-9vh) scale(1.18);}}
-        @media(prefers-reduced-motion:reduce){.smx-glow{animation:none!important;}}
+        .smx-gridtex{position:fixed;inset:0;z-index:0;pointer-events:none;
+          background-image:linear-gradient(rgba(244,241,236,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(244,241,236,.025) 1px,transparent 1px);
+          background-size:72px 72px;
+          -webkit-mask-image:radial-gradient(ellipse at 50% 32%,#000 28%,transparent 80%);
+          mask-image:radial-gradient(ellipse at 50% 32%,#000 28%,transparent 80%);}
+        .smx-vignette{position:fixed;inset:0;z-index:90;pointer-events:none;
+          background:radial-gradient(ellipse at 50% 42%,transparent 56%,rgba(0,0,0,.48) 100%);}
+        .smx-dust{position:absolute;inset:0;pointer-events:none;}
+        .smx-dust span{position:absolute;bottom:6%;border-radius:50%;background:rgba(255,190,146,.92);box-shadow:0 0 4px rgba(255,150,90,.5);opacity:0;animation-name:smxdust;animation-timing-function:linear;animation-iteration-count:infinite;}
+        @keyframes smxdust{0%{transform:translate3d(0,0,0);opacity:0;}10%{opacity:.85;}55%{opacity:.5;}100%{transform:translate3d(var(--dx,10px),-62vh,0);opacity:0;}}
+        .smx-float{animation:smxfloat 5.5s ease-in-out infinite alternate;}
+        @keyframes smxfloat{from{transform:translateY(0);}to{transform:translateY(-8px);}}
+        @media(prefers-reduced-motion:reduce){.smx-glow,.smx-dust span,.smx-float{animation:none!important;}}
         .smx-playergrid{grid-template-columns:1fr;}
         @media(min-width:860px){.smx-playergrid{grid-template-columns:230px 1fr;}}
       `}</style>
       <div className="smx-grain" />
       <StudioGlows />
+      <div className="smx-gridtex" aria-hidden="true" />
+      <div className="smx-vignette" aria-hidden="true" />
       <div className="smx-content" style={{ position: "relative", zIndex: 1 }}>
 
       {/* ---------------- NAV ---------------- */}
@@ -1315,6 +1337,24 @@ export default function SadocmixHome() {
           filter: "blur(20px)",
           animation: "smxglow 9s ease-in-out infinite", pointerEvents: "none",
         }} />
+        {/* polvo de estudio: muchas motas pequeñas que suben lentas. Valores
+           deterministas (sin random) para no romper la hidratación de Next. */}
+        <div className="smx-dust" aria-hidden="true">
+          {Array.from({ length: 30 }).map((_, i) => {
+            const left = (i * 97 + 11) % 100;            // repartidas a lo ancho
+            const dur = 13 + (i * 7) % 13;               // 13–25 s
+            const delay = (i * 5) % 20;                  // 0–19 s
+            const dx = (i % 2 ? -1 : 1) * (8 + (i * 13) % 22); // ±8–30 px
+            const s = 1.5 + (i % 3) * 0.5;               // 1.5 / 2 / 2.5 px
+            return (
+              <span key={i} style={{
+                left: `${left}%`, width: s, height: s,
+                animationDuration: `${dur}s`, animationDelay: `${delay}s`,
+                "--dx": `${dx}px`,
+              }} />
+            );
+          })}
+        </div>
         <div style={{
           maxWidth: 1240, margin: "0 auto", position: "relative",
           display: "grid", gap: "clamp(32px,5vw,60px)", alignItems: "center",
@@ -1377,9 +1417,9 @@ export default function SadocmixHome() {
 
           {/* hero visual */}
           <Reveal delay={200} style={{ display: "flex", justifyContent: "center", position: "relative" }}>
-            <div className="smx-parallax" style={{ position: "relative" }}>
+            <div style={{ position: "relative" }}>
               <HeroLogo3D />
-              <div style={{
+              <div className="smx-float" style={{
                 position: "absolute", top: 30, right: -1, background: C.cream, color: C.ink,
                 fontFamily: F.display, fontWeight: 700, fontSize: 13, padding: "10px 16px",
                 borderRadius: 999, boxShadow: "0 14px 30px -10px rgba(0,0,0,.6)",
@@ -1387,11 +1427,12 @@ export default function SadocmixHome() {
               }}>
                 <Sparkles size={15} color={C.orange} /> 6× Platino
               </div>
-              <div onClick={() => go("player")} style={{
+              <div onClick={() => go("player")} className="smx-float" style={{
                 position: "absolute", bottom: 6, left: -26, background: C.ink, color: C.cream,
                 fontFamily: F.mono, fontSize: 12, padding: "11px 16px", borderRadius: 999,
                 border: `1px solid ${C.lineHi}`, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 8,
+                animationDuration: "7s", animationDelay: "1.2s",
               }}>
                 <span style={{ width: 7, height: 7, borderRadius: "50%", background: C.orange }} /> A/B demo en vivo
               </div>
@@ -1487,35 +1528,27 @@ export default function SadocmixHome() {
         </div>
       </section>
 
-      {/* ---------------- RELEASES ---------------- */}
-      <section id="musica" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)" }}>
-        <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <Reveal><Kicker>Catálogo</Kicker></Reveal>
+      {/* ---------------- DISCOGRAFÍA ---------------- */}
+      <section id="discografia" style={{ padding: "clamp(60px,8vw,110px) 0" }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 clamp(16px,3vw,28px)" }}>
+          <Reveal><Kicker>Discografía</Kicker></Reveal>
           <Reveal delay={60} style={{
             display: "flex", justifyContent: "space-between", alignItems: "flex-end",
-            flexWrap: "wrap", gap: 14, marginTop: 14, marginBottom: 32,
+            flexWrap: "wrap", gap: 14, marginTop: 14, marginBottom: 36,
           }}>
             <h2 style={{
               fontFamily: F.display, fontWeight: 800, fontSize: "clamp(32px,4.5vw,56px)",
               letterSpacing: "-.02em", color: C.text,
-            }}>Lo que va saliendo.</h2>
+            }}>Canciones que han pasado por mis manos.</h2>
             <a href="https://open.spotify.com/playlist/0fV3niuqPcctoORtFnut27" target="_blank" rel="noreferrer" style={{
               fontFamily: F.mono, fontSize: 13, color: C.orange, cursor: "pointer", textDecoration: "none",
               display: "flex", alignItems: "center", gap: 6,
-            }}>Abrir en Spotify <ArrowUpRight size={15} /></a>
-          </Reveal>
-          <Reveal delay={120} style={{
-            borderRadius: 18, overflow: "hidden", border: `1px solid ${C.line}`, background: C.card,
-          }}>
-            <iframe
-              title="Playlist de Spotify"
-              src="https://open.spotify.com/embed/playlist/0fV3niuqPcctoORtFnut27?utm_source=generator&theme=0"
-              width="100%" height="480" frameBorder="0" loading="lazy"
-              style={{ display: "block" }}
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            />
+            }}>Ver la playlist completa <ArrowUpRight size={15} /></a>
           </Reveal>
         </div>
+        <Reveal delay={120}>
+          <CarruselDiscografia items={DISCOGRAFIA} />
+        </Reveal>
       </section>
 
       {/* ---------------- PRODUCTS ---------------- */}
@@ -1647,27 +1680,35 @@ export default function SadocmixHome() {
         </Reveal>
       </section>
 
-      {/* ---------------- DISCOGRAFÍA ---------------- */}
-      <section id="discografia" style={{ padding: "clamp(60px,8vw,110px) 0", background: C.bg2, borderTop: `1px solid ${C.line}` }}>
-        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 clamp(16px,3vw,28px)" }}>
-          <Reveal><Kicker>Discografía</Kicker></Reveal>
+      {/* ---------------- RELEASES ---------------- */}
+      <section id="musica" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)", background: C.bg2, borderTop: `1px solid ${C.line}` }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+          <Reveal><Kicker>Catálogo</Kicker></Reveal>
           <Reveal delay={60} style={{
             display: "flex", justifyContent: "space-between", alignItems: "flex-end",
-            flexWrap: "wrap", gap: 14, marginTop: 14, marginBottom: 36,
+            flexWrap: "wrap", gap: 14, marginTop: 14, marginBottom: 32,
           }}>
             <h2 style={{
               fontFamily: F.display, fontWeight: 800, fontSize: "clamp(32px,4.5vw,56px)",
               letterSpacing: "-.02em", color: C.text,
-            }}>Canciones que han pasado por mis manos.</h2>
+            }}>Lo que va saliendo.</h2>
             <a href="https://open.spotify.com/playlist/0fV3niuqPcctoORtFnut27" target="_blank" rel="noreferrer" style={{
               fontFamily: F.mono, fontSize: 13, color: C.orange, cursor: "pointer", textDecoration: "none",
               display: "flex", alignItems: "center", gap: 6,
-            }}>Ver la playlist completa <ArrowUpRight size={15} /></a>
+            }}>Abrir en Spotify <ArrowUpRight size={15} /></a>
+          </Reveal>
+          <Reveal delay={120} style={{
+            borderRadius: 18, overflow: "hidden", border: `1px solid ${C.line}`, background: C.card,
+          }}>
+            <iframe
+              title="Playlist de Spotify"
+              src="https://open.spotify.com/embed/playlist/0fV3niuqPcctoORtFnut27?utm_source=generator&theme=0"
+              width="100%" height="480" frameBorder="0" loading="lazy"
+              style={{ display: "block" }}
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            />
           </Reveal>
         </div>
-        <Reveal delay={120}>
-          <CarruselDiscografia items={DISCOGRAFIA} />
-        </Reveal>
       </section>
 
       {/* ---------------- FOOTER ---------------- */}
