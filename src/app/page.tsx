@@ -218,13 +218,13 @@ const WORDMARK_META = {
   "/img/trusted-by.png": { cy: 0.536, h: 0.057 },
   "/img/ab-player.png": { cy: 0.541, h: 0.070 },
 };
-function Wordmark({ src, alt, textH = 14, opacity = 0.85, className }) {
+function Wordmark({ src, alt, textH = 14, opacity = 0.85, className, style }) {
   const m = WORDMARK_META[src] || { cy: 0.5, h: 0.1 };
   const imgH = textH / m.h;
   const win = Math.round(textH * 2.2);
   const mt = Math.round(win / 2 - m.cy * imgH);
   return (
-    <div className={className} style={{ height: win, overflow: "hidden" }}>
+    <div className={className} style={{ height: win, overflow: "hidden", ...style }}>
       <img src={src} alt={alt} draggable={false} style={{
         height: imgH, width: "auto", display: "block",
         marginLeft: "auto", marginRight: "auto", marginTop: mt, opacity,
@@ -240,31 +240,36 @@ function TrustedBy({ items }) {
   const base = items.length < 8 ? [...items, ...items] : items;
   const row = [...base, ...base];
   return (
-    <section style={{
-      padding: "34px 0 38px", background: C.bg2,
-      borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}`,
-    }}>
-      <Wordmark src="/img/trusted-by.png" alt="Trusted by" textH={21} opacity={0.7} style={{ marginBottom: 52 }} />
-      <div className="smx-trust">
-        <div className="smx-trust__track">
-          {row.map((it, i) => (
-            <div key={i} className="smx-trust__item" aria-hidden={i >= items.length}>
-              {it.logo ? (
-                <img
-                  src={it.logo} alt={it.name} loading="lazy" draggable={false}
-                  style={{
-                    width: `${(it.scale || 1) * 100}%`, height: `${(it.scale || 1) * 100}%`,
-                    transform: it.dy ? `translateY(${it.dy}px)` : undefined,
-                  }}
-                />
-              ) : (
-                <span>{it.name}</span>
-              )}
-            </div>
-          ))}
-        </div>
+    <>
+      {/* título por encima de la línea separadora, sobre el fondo negro */}
+      <div style={{ padding: "clamp(40px,6vw,64px) 0 clamp(28px,4vw,40px)" }}>
+        <Wordmark src="/img/trusted-by.png" alt="Trusted by" textH={27} opacity={0.72} />
       </div>
-    </section>
+      <section style={{
+        padding: "clamp(34px,5vw,50px) 0", background: C.bg2,
+        borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}`,
+      }}>
+        <div className="smx-trust">
+          <div className="smx-trust__track">
+            {row.map((it, i) => (
+              <div key={i} className="smx-trust__item" aria-hidden={i >= items.length}>
+                {it.logo ? (
+                  <img
+                    src={it.logo} alt={it.name} loading="lazy" draggable={false}
+                    style={{
+                      width: `${(it.scale || 1) * 100}%`, height: `${(it.scale || 1) * 100}%`,
+                      transform: it.dy ? `translateY(${it.dy}px)` : undefined,
+                    }}
+                  />
+                ) : (
+                  <span>{it.name}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -307,7 +312,7 @@ function DiscCard({ tier, mult, title, artist, streams, cover, delay }) {
       ? { color: "#F4D77A", bg: "rgba(244,215,122,.16)", border: "rgba(244,215,122,.4)" }
       : { color: "#C8CCD3", bg: "rgba(200,204,211,.10)", border: "rgba(200,204,211,.28)" };
   return (
-    <Reveal delay={delay} className="smx-disccard" style={{
+    <Reveal delay={delay} className="smx-disccard smx-glowedge smx-glowedge--soft" style={{
       background: C.card, border: `1px solid ${C.line}`, borderRadius: 22,
       padding: 16, display: "flex", flexDirection: "column",
     }}>
@@ -345,7 +350,7 @@ function ProductCard({ badge, title, price, cover, slug, delay, onBuy }) {
   const free = price === "Gratis";
   const [infoHover, setInfoHover] = useState(false);
   return (
-    <Reveal delay={delay} className="smx-prodcard" style={{
+    <Reveal delay={delay} className="smx-prodcard smx-glowedge smx-glowedge--soft" style={{
       background: C.card, borderRadius: 18, overflow: "hidden",
       display: "flex", flexDirection: "column", height: "100%",
     }}>
@@ -581,7 +586,7 @@ function ServiceCard({ title, price, per, bullets, featured, badge, link, delay 
     textDecoration: "none", opacity: ready ? 1 : 0.55,
   };
   return (
-    <Reveal delay={delay} style={{
+    <Reveal delay={delay} className={featured ? "" : "smx-glowedge smx-glowedge--soft"} style={{
       background: featured ? C.orange : C.card,
       border: `1px solid ${featured ? "transparent" : C.line}`,
       borderRadius: 24, padding: "28px 26px", display: "flex", flexDirection: "column", gap: 18,
@@ -987,7 +992,7 @@ function ABPlayer() {
   const progress = duration ? Math.max(0, Math.min(1, time / duration)) : 0;
 
   return (
-    <div style={{
+    <div className="smx-glowedge" style={{
       background: C.cardHi, border: `1px solid ${C.lineHi}`, borderRadius: 28,
       padding: "clamp(20px,3vw,34px)",
       boxShadow: "0 40px 80px -30px rgba(0,0,0,.6)",
@@ -1240,7 +1245,7 @@ export default function SadocmixHome() {
         .smx-chip:hover{transform:translateY(-3px);border-color:rgba(232,96,10,.5);background:rgba(232,96,10,.08);}
         .smx-trust{overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);}
         .smx-trust__track{display:flex;width:max-content;align-items:center;animation:smxtrust 38s linear infinite;}
-        .smx-trust__item{flex:none;margin:0 clamp(24px,4vw,52px);width:clamp(76px,9vw,104px);height:clamp(76px,9vw,104px);display:flex;align-items:center;justify-content:center;opacity:.55;transition:opacity .3s ease;}
+        .smx-trust__item{flex:none;margin:0 clamp(22px,3.4vw,44px);width:clamp(54px,6.4vw,74px);height:clamp(54px,6.4vw,74px);display:flex;align-items:center;justify-content:center;opacity:.55;transition:opacity .3s ease;}
         .smx-trust__item:hover{opacity:1;}
         .smx-trust__item img{max-width:none;object-fit:contain;display:block;filter:grayscale(1) brightness(0) invert(1);}
         .smx-trust__item span{font-family:${F.display};font-weight:700;font-size:clamp(17px,2vw,22px);color:${C.text};white-space:nowrap;letter-spacing:.01em;}
@@ -1291,22 +1296,39 @@ export default function SadocmixHome() {
         @keyframes smxdust{0%{transform:translate3d(0,0,0);opacity:0;}10%{opacity:.85;}55%{opacity:.5;}100%{transform:translate3d(var(--dx,10px),-62vh,0);opacity:0;}}
         .smx-float{animation:smxfloat 5.5s ease-in-out infinite alternate;}
         @keyframes smxfloat{from{transform:translateY(0);}to{transform:translateY(-8px);}}
-        .smx-urban{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.55;
-          background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.6px);background-size:6px 6px;
-          -webkit-mask-image:radial-gradient(ellipse 78% 72% at 50% 46%,#000 32%,transparent 80%);
-          mask-image:radial-gradient(ellipse 78% 72% at 50% 46%,#000 32%,transparent 80%);}
-        .smx-urban--stripes{opacity:.45;background-image:repeating-linear-gradient(135deg,rgba(232,96,10,.06) 0 2px,transparent 2px 10px);
-          -webkit-mask-image:linear-gradient(180deg,transparent,#000 28%,#000 72%,transparent);
-          mask-image:linear-gradient(180deg,transparent,#000 28%,#000 72%,transparent);}
-        .smx-spotlight{position:absolute;left:50%;top:-12%;width:130%;height:85%;transform:translateX(-50%);pointer-events:none;z-index:0;
-          background:radial-gradient(50% 62% at 50% 0%,rgba(232,96,10,.16),transparent 70%);animation:smxspot 7s ease-in-out infinite;}
-        @keyframes smxspot{0%,100%{opacity:.55;transform:translateX(-50%) scale(1);}50%{opacity:1;transform:translateX(-50%) scale(1.07);}}
-        .smx-playerwrap{position:relative;isolation:isolate;}
-        .smx-playerwrap::before{content:"";position:absolute;inset:-1px;border-radius:30px;z-index:-1;
-          background:linear-gradient(120deg,rgba(232,96,10,.55),transparent 38%,transparent 62%,rgba(232,96,10,.35));
-          filter:blur(16px);animation:smxpglow 6s ease-in-out infinite;}
-        @keyframes smxpglow{0%,100%{opacity:.3;}50%{opacity:.65;}}
-        @media(prefers-reduced-motion:reduce){.smx-glow,.smx-dust span,.smx-float,.smx-spotlight,.smx-playerwrap::before{animation:none!important;}}
+        /* Ambiente reutilizable por sección: textura urbana (semitono + franjas)
+           y foco cálido animado que late desde arriba. Va detrás del contenido
+           con pseudo-elementos, sin tocar el JSX interno de cada sección. */
+        .smx-fx{position:relative;isolation:isolate;overflow:hidden;}
+        .smx-fx::before{content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;opacity:.8;
+          background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1.6px),
+            repeating-linear-gradient(135deg,rgba(232,96,10,.05) 0 2px,transparent 2px 11px);
+          background-size:6px 6px,auto;
+          -webkit-mask-image:radial-gradient(ellipse 82% 78% at 50% 44%,#000 28%,transparent 84%);
+          mask-image:radial-gradient(ellipse 82% 78% at 50% 44%,#000 28%,transparent 84%);}
+        .smx-fx::after{content:"";position:absolute;left:50%;top:-16%;width:140%;height:94%;transform:translateX(-50%);
+          z-index:-1;pointer-events:none;
+          background:radial-gradient(50% 60% at 50% 0%,rgba(232,96,10,.26),transparent 70%);
+          animation:smxspot 7s ease-in-out infinite;}
+        .smx-fx:nth-of-type(even)::after{animation-delay:-3.5s;}
+        .smx-fx:nth-of-type(3n)::after{animation-duration:8.5s;}
+        @keyframes smxspot{0%,100%{opacity:.6;transform:translateX(-50%) scale(1);}50%{opacity:1;transform:translateX(-50%) scale(1.09);}}
+        .smx-playerwrap{position:relative;}
+        /* Borde iluminado animado: un punto de luz naranja recorre el borde de
+           la tarjeta. Funciona en cualquier contenedor (no necesita fondo). */
+        @property --smxang{syntax:"<angle>";initial-value:0deg;inherits:false;}
+        .smx-glowedge{position:relative;}
+        .smx-glowedge::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;
+          background:conic-gradient(from var(--smxang),transparent 0deg,rgba(255,120,40,1) 48deg,rgba(232,96,10,.35) 96deg,transparent 150deg,transparent 222deg,rgba(255,120,40,.85) 300deg,rgba(232,96,10,.3) 336deg,transparent 360deg);
+          -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          -webkit-mask-composite:xor;mask-composite:exclude;
+          filter:drop-shadow(0 0 6px rgba(232,96,10,.6));
+          pointer-events:none;animation:smxedge 5.5s linear infinite;}
+        .smx-glowedge:nth-of-type(even)::after{animation-direction:reverse;animation-duration:7s;}
+        /* variante suave: misma animación pero mucho menos intensa (todo menos el player) */
+        .smx-glowedge--soft::after{opacity:.38;padding:1.3px;filter:none;}
+        @keyframes smxedge{to{--smxang:360deg;}}
+        @media(prefers-reduced-motion:reduce){.smx-glow,.smx-dust span,.smx-float,.smx-fx::after,.smx-glowedge::after{animation:none!important;}}
         .smx-playergrid{grid-template-columns:1fr;}
         @media(min-width:860px){.smx-playergrid{grid-template-columns:230px 1fr;}}
       `}</style>
@@ -1483,7 +1505,7 @@ export default function SadocmixHome() {
       <TrustedBy items={TRUSTED} />
 
       {/* ---------------- PALMARÉS ---------------- */}
-      <section id="logros" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)" }}>
+      <section id="logros" className="smx-fx" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <Reveal><Kicker>ACHIEVEMENTS</Kicker></Reveal>
           <Reveal delay={60} style={{
@@ -1540,14 +1562,10 @@ export default function SadocmixHome() {
       </section>
 
       {/* ---------------- A/B PLAYER ---------------- */}
-      <section id="player" className="smx-player-sec" style={{
+      <section id="player" className="smx-player-sec smx-fx" style={{
         padding: "clamp(48px,6vw,90px) clamp(16px,3vw,28px)", background: C.bg2,
         borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}`,
-        position: "relative", overflow: "hidden",
       }}>
-        <div className="smx-urban" aria-hidden="true" />
-        <div className="smx-urban smx-urban--stripes" aria-hidden="true" />
-        <div className="smx-spotlight" aria-hidden="true" />
         <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <Reveal style={{ display: "flex", justifyContent: "center" }}>
             <Wordmark src="/img/ab-player.png" alt="A/B Player" textH={32} opacity={0.85} />
@@ -1575,7 +1593,7 @@ export default function SadocmixHome() {
       </section>
 
       {/* ---------------- DISCOGRAFÍA ---------------- */}
-      <section id="discografia" style={{ padding: "clamp(60px,8vw,110px) 0" }}>
+      <section id="discografia" className="smx-fx" style={{ padding: "clamp(60px,8vw,110px) 0" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 clamp(16px,3vw,28px)" }}>
           <Reveal><Kicker>Discografía</Kicker></Reveal>
           <Reveal delay={60} style={{
@@ -1599,7 +1617,7 @@ export default function SadocmixHome() {
 
       {/* ---------------- PRODUCTS ---------------- */}
             {/* ---------------- TIENDA / PRODUCTOS ---------------- */}
-      <section id="recursos" style={{ padding: "clamp(60px,8vw,100px) clamp(16px,3vw,28px)", background: C.bg2, borderTop: `1px solid ${C.line}` }}>
+      <section id="recursos" className="smx-fx" style={{ padding: "clamp(60px,8vw,100px) clamp(16px,3vw,28px)", background: C.bg2, borderTop: `1px solid ${C.line}` }}>
         <style>{`
           .smx-prodgrid{display:grid;gap:18px;grid-template-columns:1fr;}
           @media(min-width:560px){.smx-prodgrid{grid-template-columns:1fr 1fr;}}
@@ -1656,7 +1674,7 @@ export default function SadocmixHome() {
       </section>
 
       {/* ---------------- SERVICES ---------------- */}
-      <section id="servicios" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)" }}>
+      <section id="servicios" className="smx-fx" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <Reveal style={{ textAlign: "center" }}><Kicker>Servicios</Kicker></Reveal>
           <Reveal delay={60}>
@@ -1727,7 +1745,7 @@ export default function SadocmixHome() {
       </section>
 
       {/* ---------------- RELEASES ---------------- */}
-      <section id="musica" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)", background: C.bg2, borderTop: `1px solid ${C.line}` }}>
+      <section id="musica" className="smx-fx" style={{ padding: "clamp(60px,8vw,110px) clamp(16px,3vw,28px)", background: C.bg2, borderTop: `1px solid ${C.line}` }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <Reveal><Kicker>Catálogo</Kicker></Reveal>
           <Reveal delay={60} style={{
@@ -1743,7 +1761,7 @@ export default function SadocmixHome() {
               display: "flex", alignItems: "center", gap: 6,
             }}>Abrir en Spotify <ArrowUpRight size={15} /></a>
           </Reveal>
-          <Reveal delay={120} style={{
+          <Reveal delay={120} className="smx-glowedge smx-glowedge--soft" style={{
             borderRadius: 18, overflow: "hidden", border: `1px solid ${C.line}`, background: C.card,
           }}>
             <iframe
