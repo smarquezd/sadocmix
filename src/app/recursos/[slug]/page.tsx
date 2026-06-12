@@ -23,7 +23,7 @@ const C = {
   line: "rgba(255,255,255,0.10)", lineHi: "rgba(255,255,255,0.20)",
 };
 const F = {
-  display: "'Space Grotesk', system-ui, sans-serif",
+  display: "'Archivo', system-ui, sans-serif",
   body: "'Inter', system-ui, sans-serif",
   mono: "'DM Mono', ui-monospace, monospace",
 };
@@ -309,7 +309,7 @@ export default function Page({ params }) {
   return (
     <div style={{ background: C.bg, color: C.text, fontFamily: F.body, minHeight: "100vh" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,500;125,600;125,700;125,800&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
         *{box-sizing:border-box;}
         body{margin:0;}
         .rec-hero{display:grid;gap:30px;grid-template-columns:1fr;}
