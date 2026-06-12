@@ -11,6 +11,7 @@ import Link from "next/link";
 import { PRODUCTOS } from "../data/productos";
 import { DISCOGRAFIA } from "../data/discografia";
 import { DottedSurface } from "@/components/ui/dotted-surface";
+import { FlipButton } from "@/components/ui/flip-button";
 
 /* ----------------------- logo 3D (paquete "3dsvg") ----------------------- */
 /*  <SVG3D> extruye un SVG a 3D en el navegador (usa WebGL). En Next.js debe */
@@ -1499,14 +1500,14 @@ export default function SadocmixHome() {
               </h1>
             </Reveal>
             <Reveal delay={180} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 34 }}>
-              <button onClick={() => go("player")} className="smx-cta smx-magnetic">
+                <button onClick={() => go("player")} className="smx-cta smx-magnetic">
                 <Play size={17} fill="currentColor" /> Escuchar el A/B
               </button>
-              <button onClick={() => go("servicios")} className="smx-cta smx-cta--ghost smx-magnetic" style={{
-                backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-              }}>
-                Ver servicios <ArrowRight size={17} />
-              </button>
+              <FlipButton
+                text1="Ver servicios"
+                text2="Escuchar A/B"
+                onClick={() => go("servicios")}
+              />
             </Reveal>
             <Reveal delay={300} style={{ marginTop: 38, paddingTop: 26, borderTop: `1px solid ${C.line}` }}>
               <div className="smx-specs">
