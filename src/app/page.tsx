@@ -11,6 +11,7 @@ import Link from "next/link";
 import { PRODUCTOS } from "../data/productos";
 import { DISCOGRAFIA } from "../data/discografia";
 import { DottedSurface } from "@/components/ui/dotted-surface";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 /* ----------------------- logo 3D (paquete "3dsvg") ----------------------- */
 /*  <SVG3D> extruye un SVG a 3D en el navegador (usa WebGL). En Next.js debe */
@@ -79,21 +80,24 @@ function HeroLogo3D() {
 /*   2. A working A/B mix vs. master player (two synced audio files)  */
 /* ------------------------------------------------------------------ */
 
+/* TEST tema claro: solo se cambiaron colores (fondo + texto + superficies),
+   sin tocar estructura. Para volver a oscuro, restaurar este bloque, las
+   clases .smx-glass, la nav y los puntos del DottedSurface. */
 const C = {
-  bg: "#000000",
-  bg2: "rgba(255,255,255,0.018)",
-  card: "#0E0D0C",
-  cardHi: "#161413",
-  cream: "#F3EFE8",
-  cream2: "#D8D2C8",
+  bg: "#E6E2DA",
+  bg2: "rgba(0,0,0,0.025)",
+  card: "#FBF9F5",
+  cardHi: "#FFFFFF",
+  cream: "#FBF9F5",
+  cream2: "#4A453D",
   ink: "#0A0807",
-  text: "#F4F1EC",
-  muted: "#988F86",
-  faint: "#5E574F",
+  text: "#1A1612",
+  muted: "#6B6258",
+  faint: "#938A7E",
   orange: "#E8600A",
   orangeHi: "#FF7E2B",
-  line: "rgba(255,255,255,0.10)",
-  lineHi: "rgba(255,255,255,0.20)",
+  line: "rgba(0,0,0,0.10)",
+  lineHi: "rgba(0,0,0,0.16)",
 };
 const F = {
   display: "'Archivo', system-ui, sans-serif",
@@ -313,11 +317,8 @@ function DiscCard({ tier, mult, title, artist, streams, cover, delay }) {
       ? { color: "#F4D77A", bg: "rgba(244,215,122,.16)", border: "rgba(244,215,122,.4)" }
       : { color: "#C8CCD3", bg: "rgba(200,204,211,.10)", border: "rgba(200,204,211,.28)" };
   return (
-    <Reveal delay={delay} className="smx-disccard smx-glowedge smx-glowedge--soft smx-liquid" style={{
-      background: `linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 42%), ${C.card}`,
-      border: `1px solid ${C.line}`, borderRadius: 22,
-      padding: 16, display: "flex", flexDirection: "column",
-      boxShadow: "inset 0 1px 0 rgba(255,255,255,.05)",
+    <Reveal delay={delay} className="smx-disccard smx-glowedge smx-glowedge--soft smx-liquid smx-glass" style={{
+      borderRadius: 22, padding: 16, display: "flex", flexDirection: "column",
     }}>
       <div style={{
         position: "relative", aspectRatio: "1", borderRadius: 14, overflow: "hidden",
@@ -359,8 +360,8 @@ function DiscCard({ tier, mult, title, artist, streams, cover, delay }) {
 function ProductCard({ badge, title, price, cover, slug, delay, onBuy }) {
   const free = price === "Gratis";
   return (
-    <Reveal delay={delay} className="smx-prodcard smx-glowedge smx-glowedge--soft smx-liquid" style={{
-      background: C.card, borderRadius: 18, overflow: "hidden",
+    <Reveal delay={delay} className="smx-prodcard smx-glowedge smx-glowedge--soft smx-liquid smx-glass" style={{
+      borderRadius: 18, overflow: "hidden",
       display: "flex", flexDirection: "column", height: "100%",
     }}>
       <div style={{
@@ -442,10 +443,9 @@ function ProductModal({ product, onClose, onBuy }) {
         @media(min-width:680px){.smx-modal__cover{width:264px;aspect-ratio:auto;align-self:stretch;}}
       `}</style>
 
-      <div className="smx-modal" onClick={(e) => e.stopPropagation()} style={{
+      <div className="smx-modal smx-glass--heavy" onClick={(e) => e.stopPropagation()} style={{
         width: "100%", maxWidth: 720, maxHeight: "88vh", overflowY: "auto",
-        background: C.card, borderRadius: 24, border: `1px solid ${C.lineHi}`,
-        boxShadow: "0 40px 90px -20px rgba(0,0,0,.8)",
+        borderRadius: 24, boxShadow: "0 40px 90px -20px rgba(0,0,0,.8)",
         animation: "smxmodalin .34s cubic-bezier(.2,.7,.2,1)", position: "relative",
       }}>
         <button onClick={onClose} aria-label="Cerrar" style={{
@@ -572,14 +572,10 @@ function ServiceCard({ title, price, per, bullets, featured, badge, link, delay 
     cursor: ready ? "pointer" : "not-allowed", opacity: ready ? 1 : 0.55,
   };
   return (
-    <Reveal delay={delay} className={featured ? "smx-svccard smx-liquid" : "smx-svccard smx-glowedge smx-glowedge--soft smx-liquid"} style={{
-      background: featured
-        ? C.orange
-        : `linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 44%), ${C.card}`,
-      border: `1px solid ${featured ? "transparent" : C.line}`,
+    <Reveal delay={delay} className={featured ? "smx-svccard smx-liquid" : "smx-svccard smx-glowedge smx-glowedge--soft smx-liquid smx-glass"} style={{
+      ...(featured ? { background: C.orange, border: "1px solid transparent" } : {}),
       borderRadius: 24, padding: "30px 28px", display: "flex", flexDirection: "column", gap: 18,
       position: "relative",
-      boxShadow: featured ? "none" : "inset 0 1px 0 rgba(255,255,255,.05)",
     }}>
       {badge && (
         <div style={{
@@ -993,11 +989,8 @@ function ABPlayer() {
   const progress = duration ? Math.max(0, Math.min(1, time / duration)) : 0;
 
   return (
-    <div className="smx-glowedge smx-liquid" style={{
-      background: `linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 38%), ${C.cardHi}`,
-      border: `1px solid ${C.lineHi}`, borderRadius: 28,
-      padding: "clamp(20px,3vw,34px)",
-      boxShadow: "0 40px 80px -30px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.07)",
+    <div className="smx-glowedge smx-liquid smx-glass" style={{
+      borderRadius: 28, padding: "clamp(20px,3vw,34px)",
     }}>
       <audio ref={demoRef} src={tr.demo} preload="auto" />
       <audio
@@ -1040,9 +1033,9 @@ function ABPlayer() {
         {/* player */}
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           {/* A/B toggle */}
-          <div style={{
+          <div className="smx-glass--panel" style={{
             position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr",
-            background: C.bg, borderRadius: 16, padding: 5, border: `1px solid ${C.line}`,
+            borderRadius: 16, padding: 5,
           }}>
             <div style={{
               position: "absolute", top: 5, bottom: 5, width: "calc(50% - 5px)",
@@ -1062,10 +1055,7 @@ function ABPlayer() {
           </div>
 
           {/* waveform + progreso */}
-          <div style={{
-            background: C.bg, borderRadius: 16, border: `1px solid ${C.line}`,
-            padding: "14px 16px",
-          }}>
+          <div className="smx-glass--panel" style={{ borderRadius: 16, padding: "14px 16px" }}>
             <canvas ref={canvasRef} style={{ width: "100%", height: 96, display: "block" }} />
             <div onClick={onSeek} style={{
               marginTop: 10, height: 6, borderRadius: 999, background: C.line,
@@ -1241,7 +1231,7 @@ export default function SadocmixHome() {
 
   return (
     <div className="smx" style={{
-      background: `radial-gradient(130% 80% at 50% -12%, #181009 0%, #0B0705 42%, ${C.bg} 74%) ${C.bg}`,
+      background: `radial-gradient(130% 80% at 50% -12%, #FFFFFF 0%, #EEEAE2 42%, ${C.bg} 74%) ${C.bg}`,
       color: C.text, fontFamily: F.body, minHeight: "100vh",
     }}>
       <style>{`
@@ -1357,6 +1347,22 @@ export default function SadocmixHome() {
         .smx-liquid::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
           background:radial-gradient(240px circle at var(--lx,50%) var(--ly,50%),rgba(255,255,255,.10),rgba(255,255,255,0) 65%);
           opacity:var(--lo,0);transition:opacity .45s ease;mix-blend-mode:screen;}
+        /* Material liquid glass para bloques: panel translúcido que desenfoca lo
+           que tiene detrás (glows, puntos 3D), con highlight superior tipo vidrio
+           y sombra interior abajo. --heavy para capas flotantes (modal, toast);
+           --panel para superficies internas sin blur anidado (más barato). */
+        .smx-glass{
+          background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,.4) 40%,rgba(255,255,255,.55)),rgba(251,249,245,.5);
+          -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
+          border:1px solid rgba(0,0,0,.08);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 0 -1px 0 rgba(0,0,0,.05),0 22px 48px -26px rgba(0,0,0,.25);}
+        .smx-glass--heavy{
+          background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.52) 42%),rgba(252,250,246,.86);
+          -webkit-backdrop-filter:blur(26px) saturate(150%);backdrop-filter:blur(26px) saturate(150%);
+          border:1px solid rgba(0,0,0,.1);}
+        .smx-glass--panel{
+          background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.06);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.7);}
         /* Lámina de luz que deriva lenta sobre el cristal de la nav. */
         .smx-navglass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
           background:linear-gradient(115deg,transparent 24%,rgba(255,255,255,.075) 40%,rgba(255,255,255,.02) 52%,transparent 66%);
@@ -1414,14 +1420,14 @@ export default function SadocmixHome() {
       {/* ---------------- NAV ---------------- */}
       <header style={{ position: "sticky", top: 0, zIndex: 60, padding: "16px clamp(14px,3vw,28px) 0" }}>
         <nav className="smx-navglass" style={{
-          maxWidth: 1240, margin: "0 auto", position: "relative", background: "rgba(9,7,5,.58)", borderRadius: 999,
+          maxWidth: 1240, margin: "0 auto", position: "relative", background: "rgba(255,255,255,.55)", borderRadius: 999,
           padding: "12px 14px 12px 24px", display: "flex", alignItems: "center", gap: 18,
           border: `1px solid ${C.line}`,
           backdropFilter: "blur(20px) saturate(150%)", WebkitBackdropFilter: "blur(20px) saturate(150%)",
           boxShadow: "0 18px 50px -20px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06)",
         }}>
           <div onClick={() => go("top")} style={{ display: "flex", alignItems: "center", cursor: "pointer", marginRight: "auto" }}>
-            <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" style={{ height: 34, width: "auto", display: "block" }} />
+            <img src={LOGO_DARK} alt="Sadoc Mixing & Mastering" style={{ height: 34, width: "auto", display: "block" }} />
           </div>
           <div className="smx-navdesktop" style={{ display: "none", gap: 28, alignItems: "center" }}>
             {nav.map(([label, id]) => (
@@ -1440,10 +1446,8 @@ export default function SadocmixHome() {
           </button>
         </nav>
         {menuOpen && (
-          <div style={{
-            maxWidth: 1240, margin: "10px auto 0", background: "rgba(10,10,11,.92)", borderRadius: 20,
-            border: `1px solid ${C.line}`,
-            backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)",
+          <div className="smx-glass--heavy" style={{
+            maxWidth: 1240, margin: "10px auto 0", borderRadius: 20,
             padding: "10px", display: "flex", flexDirection: "column",
           }}>
             {nav.map(([label, id]) => (
@@ -1484,23 +1488,13 @@ export default function SadocmixHome() {
                 }}>y quizá mejor.</span>
               </h1>
             </Reveal>
-            <Reveal delay={150}>
-              <p style={{
-                fontFamily: F.body, fontSize: "clamp(15.5px,1.5vw,18px)", color: C.muted,
-                lineHeight: 1.65, marginTop: 22, maxWidth: 480,
-              }}>
-                Desvela el verdadero potencial de tu música.
-              </p>
-            </Reveal>
-            <Reveal delay={220} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
-              <button onClick={() => go("player")} className="smx-cta smx-magnetic">
+            <Reveal delay={180} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 34 }}>
+              <LiquidButton tint="orange" size="lg" onClick={() => go("player")} className="smx-magnetic" style={{ fontFamily: F.display, fontWeight: 600 }}>
                 <Play size={17} fill="currentColor" /> Escuchar el A/B
-              </button>
-              <button onClick={() => go("servicios")} className="smx-cta smx-cta--ghost smx-magnetic" style={{
-                backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-              }}>
+              </LiquidButton>
+              <LiquidButton tint="clear" size="lg" onClick={() => go("servicios")} className="smx-magnetic" style={{ fontFamily: F.display, fontWeight: 600 }}>
                 Ver servicios <ArrowRight size={17} />
-              </button>
+              </LiquidButton>
             </Reveal>
             <Reveal delay={300} style={{ marginTop: 38, paddingTop: 26, borderTop: `1px solid ${C.line}` }}>
               <div className="smx-specs">
@@ -1513,7 +1507,7 @@ export default function SadocmixHome() {
                   <div key={l} className="smx-spec">
                     <span style={{
                       fontFamily: F.display, fontWeight: 700, fontSize: "clamp(19px,2vw,23px)",
-                      color: C.cream, letterSpacing: "-.01em", lineHeight: 1,
+                      color: C.text, letterSpacing: "-.01em", lineHeight: 1,
                     }}>{n}</span>
                     <span style={{
                       fontFamily: F.mono, fontSize: 11, letterSpacing: ".14em",
@@ -1541,10 +1535,10 @@ export default function SadocmixHome() {
                   boxShadow: "inset 0 0 0 .5px rgba(255,255,255,.5), 0 1px 3px rgba(0,0,0,.35)",
                 }} /> 6× Platino
               </div>
-              <div onClick={() => go("player")} className="smx-float" style={{
-                position: "absolute", bottom: 6, left: -26, background: C.ink, color: C.cream,
+              <div onClick={() => go("player")} className="smx-float smx-glass" style={{
+                position: "absolute", bottom: 6, left: -26, color: C.text,
                 fontFamily: F.mono, fontSize: 12, padding: "11px 16px", borderRadius: 10,
-                border: `1px solid ${C.lineHi}`, cursor: "pointer",
+                cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 8,
                 animationDuration: "7s", animationDelay: "1.2s",
               }}>
@@ -1573,20 +1567,16 @@ export default function SadocmixHome() {
             }}>
               Discos<br />certificados.
             </h2>
-            <p style={{ fontFamily: F.body, fontSize: 15, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>
-              Trabajo que pasó de la sesión a la radio. Cada portada es una colaboración real
-              con su certificación correspondiente.
-            </p>
           </Reveal>
 
           {/* stats */}
           <Reveal delay={120} style={{
             display: "grid", gridTemplateColumns: "1fr", gap: 1,
-            marginTop: 42, background: C.line, border: `1px solid ${C.line}`,
+            marginTop: 42, background: C.line,
             borderRadius: 22, overflow: "hidden",
-          }} className="smx-stats">
+          }} className="smx-stats smx-glass">
             {[["11", "Certificaciones"], ["1.2B+", "Streams"], ["230+", "Artistas"]].map(([n, l]) => (
-              <div key={l} style={{ background: C.bg, padding: "26px 24px" }}>
+              <div key={l} style={{ background: "rgba(255,255,255,.5)", padding: "26px 24px" }}>
                 <div style={{ fontFamily: F.display, fontWeight: 800, fontSize: "clamp(30px,3.5vw,46px)", color: C.orange }}>
                   <CountUp value={n} />
                 </div>
@@ -1677,7 +1667,7 @@ export default function SadocmixHome() {
           .smx-prodgrid{display:grid;gap:18px;grid-template-columns:1fr;}
           @media(min-width:560px){.smx-prodgrid{grid-template-columns:1fr 1fr;}}
           @media(min-width:1000px){.smx-prodgrid{grid-template-columns:repeat(4,1fr);}}
-          .smx-prodcard{border:1px solid rgba(244,236,224,.12);transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease;}
+          .smx-prodcard{transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease;}
           .smx-prodcard:hover{transform:translateY(-6px);border-color:rgba(232,96,10,.45);box-shadow:0 22px 44px -16px rgba(0,0,0,.6);}
           .smx-prodimg__art{transition:transform .55s cubic-bezier(.2,.7,.2,1);}
           .smx-prodcard:hover .smx-prodimg__art{transform:scale(1.12);}
@@ -1823,8 +1813,8 @@ export default function SadocmixHome() {
               display: "flex", alignItems: "center", gap: 6,
             }}>Abrir en Spotify <ArrowUpRight size={15} /></a>
           </Reveal>
-          <Reveal delay={120} className="smx-glowedge smx-glowedge--soft" style={{
-            borderRadius: 18, overflow: "hidden", border: `1px solid ${C.line}`, background: C.card,
+          <Reveal delay={120} className="smx-glowedge smx-glowedge--soft smx-glass" style={{
+            borderRadius: 18, overflow: "hidden",
           }}>
             <iframe
               title="Playlist de Spotify"
@@ -1857,7 +1847,7 @@ export default function SadocmixHome() {
         }} className="smx-footgrid">
           <div>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" style={{ height: 40, width: "auto", display: "block" }} />
+              <img src={LOGO_DARK} alt="Sadoc Mixing & Mastering" style={{ height: 40, width: "auto", display: "block" }} />
             </div>
             <p style={{ fontFamily: F.body, fontSize: 14, color: C.muted, marginTop: 16, maxWidth: 280, lineHeight: 1.65 }}>
               Mezcla, mastering y estrategia musical. Hecho en Madrid.
@@ -1903,12 +1893,11 @@ export default function SadocmixHome() {
         onBuy={() => { setInfoProduct(null); showToast("Próximamente disponible"); }}
       />
       {toast && (
-        <div style={{
+        <div className="smx-glass--heavy" style={{
           position: "fixed", left: "50%", top: "50%", zIndex: 300,
-          transform: "translate(-50%,-50%)",
-          background: C.ink, color: C.cream, border: `1px solid ${C.lineHi}`,
-          fontFamily: F.mono, fontSize: 16, padding: "20px 32px", borderRadius: 999,
-          boxShadow: "0 24px 60px -12px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.1)",
+          transform: "translate(-50%,-50%)", color: C.text,
+          fontFamily: F.mono, fontSize: 16, padding: "20px 32px", borderRadius: 14,
+          boxShadow: "0 24px 60px -12px rgba(0,0,0,.7)",
           display: "flex", alignItems: "center", gap: 12,
           animation: "smxtoast .35s cubic-bezier(.2,.7,.2,1)",
         }}>
