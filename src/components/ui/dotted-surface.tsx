@@ -32,9 +32,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    // Scene setup (fog del color del fondo claro para que los puntos lejanos se fundan)
+    // Scene setup
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xe6e2da, 2000, 10000);
+    scene.fog = new THREE.Fog(0x000000, 2000, 10000);
 
     const camera = new THREE.PerspectiveCamera(
       60,
@@ -60,9 +60,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
     const geometry = new THREE.BufferGeometry();
 
-    // TEST tema claro: puntos en tinta oscura para que se vean sobre el fondo
-    // claro (antes crema). La opacidad del material los deja como textura.
-    const DOT = { r: 0.12, g: 0.1, b: 0.08 };
+    // Crema cálido de la marca (#F4F1EC) en 0–1; la opacidad del material
+    // lo deja como textura de fondo, no como protagonista.
+    const DOT = { r: 0.957, g: 0.945, b: 0.925 };
 
     for (let ix = 0; ix < AMOUNTX; ix++) {
       for (let iy = 0; iy < AMOUNTY; iy++) {

@@ -11,7 +11,6 @@ import Link from "next/link";
 import { PRODUCTOS } from "../data/productos";
 import { DISCOGRAFIA } from "../data/discografia";
 import { DottedSurface } from "@/components/ui/dotted-surface";
-import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 /* ----------------------- logo 3D (paquete "3dsvg") ----------------------- */
 /*  <SVG3D> extruye un SVG a 3D en el navegador (usa WebGL). En Next.js debe */
@@ -80,24 +79,21 @@ function HeroLogo3D() {
 /*   2. A working A/B mix vs. master player (two synced audio files)  */
 /* ------------------------------------------------------------------ */
 
-/* TEST tema claro: solo se cambiaron colores (fondo + texto + superficies),
-   sin tocar estructura. Para volver a oscuro, restaurar este bloque, las
-   clases .smx-glass, la nav y los puntos del DottedSurface. */
 const C = {
-  bg: "#E6E2DA",
-  bg2: "rgba(0,0,0,0.025)",
-  card: "#FBF9F5",
-  cardHi: "#FFFFFF",
-  cream: "#FBF9F5",
-  cream2: "#4A453D",
+  bg: "#000000",
+  bg2: "rgba(255,255,255,0.018)",
+  card: "#0E0D0C",
+  cardHi: "#161413",
+  cream: "#F3EFE8",
+  cream2: "#D8D2C8",
   ink: "#0A0807",
-  text: "#1A1612",
-  muted: "#6B6258",
-  faint: "#938A7E",
+  text: "#F4F1EC",
+  muted: "#988F86",
+  faint: "#5E574F",
   orange: "#E8600A",
   orangeHi: "#FF7E2B",
-  line: "rgba(0,0,0,0.10)",
-  lineHi: "rgba(0,0,0,0.16)",
+  line: "rgba(255,255,255,0.10)",
+  lineHi: "rgba(255,255,255,0.20)",
 };
 const F = {
   display: "'Archivo', system-ui, sans-serif",
@@ -551,7 +547,7 @@ function ProductModal({ product, onClose, onBuy }) {
               <span style={{ fontFamily: F.mono, fontSize: 10.5, letterSpacing: ".1em", textTransform: "uppercase", color: C.faint }}>Precio</span>
               <span style={{ fontFamily: F.display, fontWeight: 800, fontSize: 27, color: free ? C.orange : C.text }}>{price}</span>
             </div>
-            <button className="smx-cta" onClick={() => onBuy && onBuy()} style={{ fontWeight: 700, padding: "14px 24px" }}>
+            <button className="smx-cta" onClick={() => onBuy && onBuy()} style={{ fontWeight: 700, padding: "11px 20px" }}>
               {free ? "Descargar" : "Comprar ahora"} <ArrowRight size={17} />
             </button>
           </div>
@@ -568,7 +564,7 @@ function ServiceCard({ title, price, per, bullets, featured, badge, link, delay 
   const pricePrefix = desdeMatch ? "desde" : null;
   const priceAmount = desdeMatch ? desdeMatch[1] : price;
   const btnLayout = {
-    marginTop: "auto", width: "100%", fontSize: 14.5, padding: "14px 18px",
+    marginTop: "auto", width: "100%", fontSize: 13, padding: "11px 16px",
     cursor: ready ? "pointer" : "not-allowed", opacity: ready ? 1 : 0.55,
   };
   return (
@@ -1231,7 +1227,7 @@ export default function SadocmixHome() {
 
   return (
     <div className="smx" style={{
-      background: `radial-gradient(130% 80% at 50% -12%, #FFFFFF 0%, #EEEAE2 42%, ${C.bg} 74%) ${C.bg}`,
+      background: `radial-gradient(130% 80% at 50% -12%, #181009 0%, #0B0705 42%, ${C.bg} 74%) ${C.bg}`,
       color: C.text, fontFamily: F.body, minHeight: "100vh",
     }}>
       <style>{`
@@ -1271,26 +1267,40 @@ export default function SadocmixHome() {
         .smx-release:hover .smx-playover{opacity:1;}
         .smx-product{transition:transform .35s ease;}
         .smx-product:hover{transform:translateY(-6px);}
-        /* Sistema de botones: planos, sin glow ni gradientes.
-           .smx-cta  — editorial sólido (CTAs grandes), hover invierte a crema.
-           .smx-tbtn — consola técnica (botones pequeños), mono mayúsculas, 4px. */
-        .smx-cta{font-family:${F.display};font-weight:600;font-size:15px;color:${C.ink};background:${C.orange};
-          border:none;border-radius:10px;padding:15px 26px;cursor:pointer;text-decoration:none;
-          display:inline-flex;align-items:center;justify-content:center;gap:9px;
-          transition:background .18s ease,color .18s ease,border-color .18s ease,transform .4s cubic-bezier(.3,1.45,.4,1);}
-        .smx-cta:hover{background:${C.cream};color:${C.ink};}
-        .smx-cta:active{transform:scale(.97);}
-        .smx-cta--ghost{background:rgba(255,255,255,.03);color:${C.text};border:1px solid ${C.lineHi};}
-        .smx-cta--ghost:hover{background:${C.cream};color:${C.ink};border-color:${C.cream};}
-        .smx-cta--ink{background:${C.ink};color:${C.cream};}
-        .smx-cta--ink:hover{background:${C.cream};color:${C.ink};}
-        .smx-tbtn{font-family:${F.mono};font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
-          background:${C.orange};color:${C.ink};border:none;border-radius:4px;padding:11px 16px;cursor:pointer;
-          display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;
-          transition:background .18s ease,color .18s ease,border-color .18s ease;}
-        .smx-tbtn:hover{background:${C.cream};color:${C.ink};}
-        .smx-tbtn--ghost{background:transparent;color:${C.cream2};border:1px solid ${C.lineHi};}
-        .smx-tbtn--ghost:hover{background:${C.orange};color:${C.ink};border-color:${C.orange};}
+        /* Sistema de botones: liquid glass. Vidrio translúcido que desenfoca el
+           fondo (backdrop blur) + bisel de cristal (highlights inset en los
+           bordes) + halo interior. .smx-cta = vidrio naranja de marca (CTA),
+           --ghost vidrio claro, --ink vidrio ahumado; .smx-tbtn = pequeño mono. */
+        .smx-cta{font-family:${F.display};font-weight:600;font-size:13px;color:#2A1304;
+          background:linear-gradient(180deg,rgba(255,150,70,.62),rgba(232,96,10,.5));
+          -webkit-backdrop-filter:blur(12px) saturate(155%);backdrop-filter:blur(12px) saturate(155%);
+          border:1px solid rgba(255,190,135,.4);border-radius:10px;padding:11px 20px;cursor:pointer;text-decoration:none;
+          display:inline-flex;align-items:center;justify-content:center;gap:8px;
+          box-shadow:inset 1.6px 1.6px 1px -1px rgba(255,255,255,.7),inset -1.4px -1.4px 1px -1px rgba(255,255,255,.4),inset 0 0 14px 2px rgba(255,210,165,.18),0 12px 30px -10px rgba(0,0,0,.55);
+          transition:background .2s ease,box-shadow .25s ease,transform .25s cubic-bezier(.3,1.3,.4,1);}
+        .smx-cta:hover{background:linear-gradient(180deg,rgba(255,165,90,.78),rgba(232,96,10,.62));transform:translateY(-1px);}
+        .smx-cta:active{transform:translateY(1px) scale(.98);}
+        .smx-cta--ghost{color:${C.text};
+          background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);
+          box-shadow:inset 1.6px 1.6px 1px -1px rgba(255,255,255,.55),inset -1.4px -1.4px 1px -1px rgba(255,255,255,.32),inset 0 0 14px 2px rgba(255,255,255,.05),0 12px 30px -10px rgba(0,0,0,.5);}
+        .smx-cta--ghost:hover{background:rgba(255,255,255,.13);transform:translateY(-1px);}
+        .smx-cta--ink{color:${C.cream};
+          background:rgba(8,6,5,.42);border:1px solid rgba(255,255,255,.2);
+          box-shadow:inset 1.6px 1.6px 1px -1px rgba(255,255,255,.5),inset -1.4px -1.4px 1px -1px rgba(255,255,255,.28),inset 0 0 14px 2px rgba(255,255,255,.05),0 12px 30px -10px rgba(0,0,0,.5);}
+        .smx-cta--ink:hover{background:rgba(8,6,5,.58);transform:translateY(-1px);}
+        .smx-tbtn{font-family:${F.mono};font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#2A1304;
+          background:linear-gradient(180deg,rgba(255,150,70,.6),rgba(232,96,10,.48));
+          -webkit-backdrop-filter:blur(10px) saturate(150%);backdrop-filter:blur(10px) saturate(150%);
+          border:1px solid rgba(255,190,135,.38);border-radius:5px;padding:8px 13px;cursor:pointer;text-decoration:none;
+          display:inline-flex;align-items:center;justify-content:center;gap:6px;
+          box-shadow:inset 1.4px 1.4px 1px -1px rgba(255,255,255,.65),inset -1.2px -1.2px 1px -1px rgba(255,255,255,.38),inset 0 0 12px 2px rgba(255,210,165,.16),0 8px 20px -8px rgba(0,0,0,.5);
+          transition:background .2s ease,box-shadow .25s ease,transform .25s cubic-bezier(.3,1.3,.4,1);}
+        .smx-tbtn:hover{background:linear-gradient(180deg,rgba(255,165,90,.76),rgba(232,96,10,.6));transform:translateY(-1px);}
+        .smx-tbtn:active{transform:translateY(1px) scale(.98);}
+        .smx-tbtn--ghost{color:${C.text};
+          background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
+          box-shadow:inset 1.4px 1.4px 1px -1px rgba(255,255,255,.5),inset -1.2px -1.2px 1px -1px rgba(255,255,255,.28),inset 0 0 12px 2px rgba(255,255,255,.05),0 8px 20px -8px rgba(0,0,0,.45);}
+        .smx-tbtn--ghost:hover{background:rgba(255,255,255,.12);transform:translateY(-1px);}
         .smx-play{transition:transform .2s ease;}
         .smx-play:hover{transform:scale(1.06);}
         .smx-trust{overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);}
@@ -1345,24 +1355,24 @@ export default function SadocmixHome() {
            hace que se lea como luz sobre cualquier fondo (oscuro o lacado). */
         .smx-liquid{position:relative;}
         .smx-liquid::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
-          background:radial-gradient(240px circle at var(--lx,50%) var(--ly,50%),rgba(255,255,255,.10),rgba(255,255,255,0) 65%);
+          background:radial-gradient(190px circle at var(--lx,50%) var(--ly,50%),rgba(255,255,255,.05),rgba(255,255,255,0) 62%);
           opacity:var(--lo,0);transition:opacity .45s ease;mix-blend-mode:screen;}
         /* Material liquid glass para bloques: panel translúcido que desenfoca lo
            que tiene detrás (glows, puntos 3D), con highlight superior tipo vidrio
            y sombra interior abajo. --heavy para capas flotantes (modal, toast);
            --panel para superficies internas sin blur anidado (más barato). */
         .smx-glass{
-          background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,.4) 40%,rgba(255,255,255,.55)),rgba(251,249,245,.5);
-          -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
-          border:1px solid rgba(0,0,0,.08);
-          box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 0 -1px 0 rgba(0,0,0,.05),0 22px 48px -26px rgba(0,0,0,.25);}
+          background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012) 40%,rgba(255,255,255,.028)),rgba(13,11,9,.52);
+          -webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);
+          border:1px solid rgba(255,255,255,.13);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.28),0 26px 54px -24px rgba(0,0,0,.62);}
         .smx-glass--heavy{
-          background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.52) 42%),rgba(252,250,246,.86);
-          -webkit-backdrop-filter:blur(26px) saturate(150%);backdrop-filter:blur(26px) saturate(150%);
-          border:1px solid rgba(0,0,0,.1);}
+          background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.014) 42%),rgba(15,12,10,.78);
+          -webkit-backdrop-filter:blur(26px) saturate(160%);backdrop-filter:blur(26px) saturate(160%);
+          border:1px solid rgba(255,255,255,.16);}
         .smx-glass--panel{
-          background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.06);
-          box-shadow:inset 0 1px 0 rgba(255,255,255,.7);}
+          background:rgba(8,6,5,.45);border:1px solid rgba(255,255,255,.09);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.07);}
         /* Lámina de luz que deriva lenta sobre el cristal de la nav. */
         .smx-navglass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
           background:linear-gradient(115deg,transparent 24%,rgba(255,255,255,.075) 40%,rgba(255,255,255,.02) 52%,transparent 66%);
@@ -1420,14 +1430,14 @@ export default function SadocmixHome() {
       {/* ---------------- NAV ---------------- */}
       <header style={{ position: "sticky", top: 0, zIndex: 60, padding: "16px clamp(14px,3vw,28px) 0" }}>
         <nav className="smx-navglass" style={{
-          maxWidth: 1240, margin: "0 auto", position: "relative", background: "rgba(255,255,255,.55)", borderRadius: 999,
+          maxWidth: 1240, margin: "0 auto", position: "relative", background: "rgba(9,7,5,.58)", borderRadius: 999,
           padding: "12px 14px 12px 24px", display: "flex", alignItems: "center", gap: 18,
           border: `1px solid ${C.line}`,
           backdropFilter: "blur(20px) saturate(150%)", WebkitBackdropFilter: "blur(20px) saturate(150%)",
           boxShadow: "0 18px 50px -20px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06)",
         }}>
           <div onClick={() => go("top")} style={{ display: "flex", alignItems: "center", cursor: "pointer", marginRight: "auto" }}>
-            <img src={LOGO_DARK} alt="Sadoc Mixing & Mastering" style={{ height: 34, width: "auto", display: "block" }} />
+            <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" style={{ height: 34, width: "auto", display: "block" }} />
           </div>
           <div className="smx-navdesktop" style={{ display: "none", gap: 28, alignItems: "center" }}>
             {nav.map(([label, id]) => (
@@ -1438,7 +1448,7 @@ export default function SadocmixHome() {
             ))}
           </div>
           <ShoppingBag size={19} color={C.cream2} style={{ cursor: "pointer" }} />
-          <button className="smx-cta" style={{ fontSize: 14, padding: "11px 20px" }}>Entrar</button>
+          <button className="smx-cta" style={{ fontSize: 12.5, padding: "9px 16px" }}>Entrar</button>
           <button onClick={() => setMenuOpen((o) => !o)} className="smx-navmobile" style={{
             display: "flex", background: "transparent", border: "none", cursor: "pointer", color: C.text,
           }}>
@@ -1489,12 +1499,14 @@ export default function SadocmixHome() {
               </h1>
             </Reveal>
             <Reveal delay={180} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 34 }}>
-              <LiquidButton tint="orange" size="lg" onClick={() => go("player")} className="smx-magnetic" style={{ fontFamily: F.display, fontWeight: 600 }}>
+              <button onClick={() => go("player")} className="smx-cta smx-magnetic">
                 <Play size={17} fill="currentColor" /> Escuchar el A/B
-              </LiquidButton>
-              <LiquidButton tint="clear" size="lg" onClick={() => go("servicios")} className="smx-magnetic" style={{ fontFamily: F.display, fontWeight: 600 }}>
+              </button>
+              <button onClick={() => go("servicios")} className="smx-cta smx-cta--ghost smx-magnetic" style={{
+                backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+              }}>
                 Ver servicios <ArrowRight size={17} />
-              </LiquidButton>
+              </button>
             </Reveal>
             <Reveal delay={300} style={{ marginTop: 38, paddingTop: 26, borderTop: `1px solid ${C.line}` }}>
               <div className="smx-specs">
@@ -1576,7 +1588,7 @@ export default function SadocmixHome() {
             borderRadius: 22, overflow: "hidden",
           }} className="smx-stats smx-glass">
             {[["11", "Certificaciones"], ["1.2B+", "Streams"], ["230+", "Artistas"]].map(([n, l]) => (
-              <div key={l} style={{ background: "rgba(255,255,255,.5)", padding: "26px 24px" }}>
+              <div key={l} style={{ background: "rgba(10,8,6,.55)", padding: "26px 24px" }}>
                 <div style={{ fontFamily: F.display, fontWeight: 800, fontSize: "clamp(30px,3.5vw,46px)", color: C.orange }}>
                   <CountUp value={n} />
                 </div>
@@ -1789,7 +1801,7 @@ export default function SadocmixHome() {
             ¿Tienes una canción lista<br />para sonar de verdad?
           </h2>
           <button onClick={() => go("servicios")} className="smx-cta smx-cta--ink smx-magnetic" style={{
-            marginTop: 28, fontWeight: 700, fontSize: 16, padding: "16px 32px", position: "relative",
+            marginTop: 28, fontWeight: 700, fontSize: 13.5, padding: "12px 24px", position: "relative",
           }}>
             Cuéntame el proyecto <ArrowRight size={18} />
           </button>
@@ -1847,7 +1859,7 @@ export default function SadocmixHome() {
         }} className="smx-footgrid">
           <div>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <img src={LOGO_DARK} alt="Sadoc Mixing & Mastering" style={{ height: 40, width: "auto", display: "block" }} />
+              <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" style={{ height: 40, width: "auto", display: "block" }} />
             </div>
             <p style={{ fontFamily: F.body, fontSize: 14, color: C.muted, marginTop: 16, maxWidth: 280, lineHeight: 1.65 }}>
               Mezcla, mastering y estrategia musical. Hecho en Madrid.
