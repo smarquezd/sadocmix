@@ -14,6 +14,7 @@ import { use, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Play, Pause, ArrowLeft, ArrowRight, Check, Headphones, ChevronDown } from "lucide-react";
 import { getProducto } from "../../../data/productos";
+import { DottedSurface } from "@/components/ui/dotted-surface";
 
 /* --- paleta y tipografías (mismas que la home) --- */
 const C = {
@@ -307,7 +308,10 @@ export default function Page({ params }) {
     );
 
   return (
-    <div style={{ background: C.bg, color: C.text, fontFamily: F.body, minHeight: "100vh" }}>
+    <div style={{
+      background: `radial-gradient(130% 80% at 50% -12%, #181009 0%, #0B0705 42%, ${C.bg} 74%) ${C.bg}`,
+      color: C.text, fontFamily: F.body, minHeight: "100vh", position: "relative",
+    }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,500;125,600;125,700;125,800&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
         *{box-sizing:border-box;}
@@ -321,7 +325,30 @@ export default function Page({ params }) {
         .rec-link:hover{color:${C.orangeHi}!important;}
         .rec-btn{transition:transform .2s ease,filter .2s ease;}
         .rec-btn:hover{transform:translateY(-2px);filter:brightness(1.06);}
+        /* Fondo de marca (mismo que la home): puntos 3D, focos cálidos, grano y viñeta. */
+        .smx-grain{position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.05;mix-blend-mode:overlay;
+          background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+        .smx-vignette{position:fixed;inset:0;z-index:90;pointer-events:none;
+          background:radial-gradient(ellipse at 50% 42%,transparent 56%,rgba(0,0,0,.48) 100%);}
+        .smx-glows{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+        .smx-glow{position:absolute;border-radius:50%;filter:blur(48px);}
+        .smx-glow--a{width:48vw;height:48vw;left:-10vw;top:-12vw;background:radial-gradient(circle,rgba(235,71,39,.20),transparent 68%);animation:smxdriftA 30s ease-in-out infinite;}
+        .smx-glow--b{width:42vw;height:42vw;right:-12vw;top:30vh;background:radial-gradient(circle,rgba(235,71,39,.13),transparent 70%);animation:smxdriftB 38s ease-in-out infinite;}
+        .smx-glow--c{width:56vw;height:56vw;left:14vw;bottom:-22vw;background:radial-gradient(circle,rgba(150,34,18,.16),transparent 72%);animation:smxdriftC 46s ease-in-out infinite;}
+        @keyframes smxdriftA{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(9vw,7vh) scale(1.14);}}
+        @keyframes smxdriftB{0%,100%{transform:translate(0,0) scale(1.06);}50%{transform:translate(-7vw,-5vh) scale(.92);}}
+        @keyframes smxdriftC{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-6vw,-9vh) scale(1.18);}}
+        @media(prefers-reduced-motion:reduce){.smx-glow{animation:none!important;}}
       `}</style>
+      <div className="smx-grain" aria-hidden="true" />
+      <DottedSurface aria-hidden="true" style={{ zIndex: 0, opacity: 0.6 }} />
+      <div className="smx-glows" aria-hidden="true">
+        <span className="smx-glow smx-glow--a" />
+        <span className="smx-glow smx-glow--b" />
+        <span className="smx-glow smx-glow--c" />
+      </div>
+      <div className="smx-vignette" aria-hidden="true" />
+      <div style={{ position: "relative", zIndex: 1 }}>
 
       {/* ---------------- header ---------------- */}
       <header style={{
@@ -558,6 +585,7 @@ export default function Page({ params }) {
           </Link>
         </div>
       </footer>
+      </div>
     </div>
   );
 }

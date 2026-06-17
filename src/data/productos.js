@@ -118,7 +118,7 @@ export const PRODUCTOS = [
     badge: "Plantilla",
     title: "Template Vocal FX — Reggaetón",
     price: "24€",
-    cover: "",
+    cover: "/img/productos/template-vocal-fx.png",
     comprarLink: "",
     daws: [
       {
