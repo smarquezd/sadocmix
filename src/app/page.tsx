@@ -11,7 +11,6 @@ import Link from "next/link";
 import { PRODUCTOS } from "../data/productos";
 import { DISCOGRAFIA } from "../data/discografia";
 import { DottedSurface } from "@/components/ui/dotted-surface";
-import { FlipButton } from "@/components/ui/flip-button";
 
 /* ----------------------- logo 3D (paquete "3dsvg") ----------------------- */
 /*  <SVG3D> extruye un SVG a 3D en el navegador (usa WebGL). En Next.js debe */
@@ -103,7 +102,6 @@ const F = {
 };
 const GOLD = "radial-gradient(circle at 34% 28%, #FDEBB0 0%, #ECC152 34%, #B6841F 70%, #6F4D12 100%)";
 const PLAT = "radial-gradient(circle at 34% 28%, #FCFCFB 0%, #DADDE2 36%, #A1A7B0 70%, #5C616B 100%)";
-const LOGO_DARK = "/img/logo-dark.png";
 const LOGO_WHITE = "/img/logo-white.png";
 const AUDIO_EN_MEDALLO_DEMO = "/audio/en-medallo-demo.mp3";
 const AUDIO_EN_MEDALLO_MASTER = "/audio/en-medallo-master.mp3";
@@ -272,36 +270,6 @@ function TrustedBy({ items }) {
         </div>
       </section>
     </>
-  );
-}
-
-function Disc({ tier, size = 150, spin = false }) {
-  return (
-    <div
-      className={spin ? "smx-spin" : "smx-disc"}
-      style={{
-        width: size, height: size, borderRadius: "50%",
-        background: tier === "platino" ? PLAT : GOLD,
-        boxShadow:
-          "0 24px 46px -14px rgba(0,0,0,.65), inset 0 0 0 1px rgba(255,255,255,.28), inset 0 0 70px rgba(0,0,0,.4)",
-        position: "relative", flex: "none",
-      }}
-    >
-      <div style={{
-        position: "absolute", inset: 0, borderRadius: "50%",
-        backgroundImage:
-          "repeating-radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0 5px, rgba(0,0,0,.10) 5px 6px)",
-      }} />
-      <div style={{
-        position: "absolute", top: "50%", left: "50%", width: "36%", height: "36%",
-        transform: "translate(-50%,-50%)", borderRadius: "50%",
-        background: tier === "platino" ? C.ink : C.orange,
-        boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <div style={{ width: "16%", height: "16%", borderRadius: "50%", background: C.bg }} />
-      </div>
-    </div>
   );
 }
 
@@ -862,9 +830,9 @@ function ABPlayer() {
     const d = demoRef.current, m = masterRef.current;
     if (!d || !m) return;
     setTime(0); setDuration(0); setPlaying(false);
-    try { d.pause(); m.pause(); } catch (e) {}
-    try { d.currentTime = 0; m.currentTime = 0; } catch (e) {}
-    try { d.load(); m.load(); } catch (e) {}
+    try { d.pause(); m.pause(); } catch {}
+    try { d.currentTime = 0; m.currentTime = 0; } catch {}
+    try { d.load(); m.load(); } catch {}
   }, [track]);
 
   const togglePlay = async () => {
@@ -881,7 +849,7 @@ function ABPlayer() {
         await Promise.all([d.play(), m.play()]);
         setPlaying(true);
       }
-    } catch (e) {
+    } catch {
       setPlaying(false);
     }
   };
@@ -1255,53 +1223,32 @@ export default function SadocmixHome() {
         }
         [data-reveal]{opacity:0;transform:translateY(26px);filter:blur(6px);transition:opacity .85s cubic-bezier(.2,.7,.2,1),transform .85s cubic-bezier(.2,.7,.2,1),filter .85s cubic-bezier(.2,.7,.2,1);}
         [data-reveal].is-in{opacity:1;transform:translateY(0);filter:blur(0);}
-        .smx-spin{animation:smxspin 16s linear infinite;}
-        @keyframes smxspin{to{transform:rotate(360deg);}}
-        .smx-disc{transition:transform .4s ease;}
-        .smx-disccard:hover .smx-disc{animation:smxspin 5s linear infinite;}
         .smx-disccard{transition:transform .35s ease,border-color .35s ease;}
         .smx-disccard:hover{transform:translateY(-6px);border-color:rgba(232,96,10,.4);}
         .smx-svccard{transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease;}
         .smx-svccard:hover{transform:translateY(-5px);border-color:${C.lineHi};}
-        .smx-release{transition:transform .35s ease,border-color .35s ease;}
-        .smx-release:hover{transform:translateY(-6px);border-color:rgba(232,96,10,.4);}
-        .smx-release:hover .smx-playover{opacity:1;}
-        .smx-product{transition:transform .35s ease;}
-        .smx-product:hover{transform:translateY(-6px);}
-        /* Sistema de botones: liquid glass. Vidrio translúcido que desenfoca el
-           fondo (backdrop blur) + bisel de cristal (highlights inset en los
-           bordes) + halo interior. .smx-cta = vidrio naranja de marca (CTA),
-           --ghost vidrio claro, --ink vidrio ahumado; .smx-tbtn = pequeño mono. */
-        .smx-cta{font-family:${F.display};font-weight:600;font-size:13px;color:#2A1304;
-          background:linear-gradient(180deg,rgba(255,150,70,.62),rgba(232,96,10,.5));
-          -webkit-backdrop-filter:blur(12px) saturate(155%);backdrop-filter:blur(12px) saturate(155%);
-          border:1px solid rgba(255,190,135,.4);border-radius:10px;padding:11px 20px;cursor:pointer;text-decoration:none;
+        /* Sistema de botones: plano y sólido, editorial. Sin gradiente, vidrio,
+           bisel ni glow (esos efectos leen como "IA"). Solo color de marca,
+           tipografía limpia y un hover sobrio. .smx-cta = naranja sólido,
+           --ghost contorno fino, --ink tinta; .smx-tbtn = pequeño en mono. */
+        .smx-cta{font-family:${F.display};font-weight:600;font-size:13px;color:${C.ink};
+          background:${C.orange};border:none;border-radius:9px;padding:11px 20px;cursor:pointer;text-decoration:none;
           display:inline-flex;align-items:center;justify-content:center;gap:8px;
-          box-shadow:inset 1.6px 1.6px 1px -1px rgba(255,255,255,.7),inset -1.4px -1.4px 1px -1px rgba(255,255,255,.4),inset 0 0 14px 2px rgba(255,210,165,.18),0 12px 30px -10px rgba(0,0,0,.55);
-          transition:background .2s ease,box-shadow .25s ease,transform .25s cubic-bezier(.3,1.3,.4,1);}
-        .smx-cta:hover{background:linear-gradient(180deg,rgba(255,165,90,.78),rgba(232,96,10,.62));transform:translateY(-1px);}
-        .smx-cta:active{transform:translateY(1px) scale(.98);}
-        .smx-cta--ghost{color:${C.text};
-          background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);
-          box-shadow:inset 1.6px 1.6px 1px -1px rgba(255,255,255,.55),inset -1.4px -1.4px 1px -1px rgba(255,255,255,.32),inset 0 0 14px 2px rgba(255,255,255,.05),0 12px 30px -10px rgba(0,0,0,.5);}
-        .smx-cta--ghost:hover{background:rgba(255,255,255,.13);transform:translateY(-1px);}
-        .smx-cta--ink{color:${C.cream};
-          background:rgba(8,6,5,.42);border:1px solid rgba(255,255,255,.2);
-          box-shadow:inset 1.6px 1.6px 1px -1px rgba(255,255,255,.5),inset -1.4px -1.4px 1px -1px rgba(255,255,255,.28),inset 0 0 14px 2px rgba(255,255,255,.05),0 12px 30px -10px rgba(0,0,0,.5);}
-        .smx-cta--ink:hover{background:rgba(8,6,5,.58);transform:translateY(-1px);}
-        .smx-tbtn{font-family:${F.mono};font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#2A1304;
-          background:linear-gradient(180deg,rgba(255,150,70,.6),rgba(232,96,10,.48));
-          -webkit-backdrop-filter:blur(10px) saturate(150%);backdrop-filter:blur(10px) saturate(150%);
-          border:1px solid rgba(255,190,135,.38);border-radius:5px;padding:8px 13px;cursor:pointer;text-decoration:none;
+          transition:background .18s ease,transform .15s ease;}
+        .smx-cta:hover{background:${C.orangeHi};}
+        .smx-cta:active{transform:translateY(1px);}
+        .smx-cta--ghost{background:transparent;color:${C.text};border:1px solid ${C.lineHi};}
+        .smx-cta--ghost:hover{background:rgba(255,255,255,.06);border-color:${C.cream2};}
+        .smx-cta--ink{background:${C.ink};color:${C.cream};border:none;}
+        .smx-cta--ink:hover{background:#1A1512;}
+        .smx-tbtn{font-family:${F.mono};font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:${C.ink};
+          background:${C.orange};border:none;border-radius:5px;padding:8px 13px;cursor:pointer;text-decoration:none;
           display:inline-flex;align-items:center;justify-content:center;gap:6px;
-          box-shadow:inset 1.4px 1.4px 1px -1px rgba(255,255,255,.65),inset -1.2px -1.2px 1px -1px rgba(255,255,255,.38),inset 0 0 12px 2px rgba(255,210,165,.16),0 8px 20px -8px rgba(0,0,0,.5);
-          transition:background .2s ease,box-shadow .25s ease,transform .25s cubic-bezier(.3,1.3,.4,1);}
-        .smx-tbtn:hover{background:linear-gradient(180deg,rgba(255,165,90,.76),rgba(232,96,10,.6));transform:translateY(-1px);}
-        .smx-tbtn:active{transform:translateY(1px) scale(.98);}
-        .smx-tbtn--ghost{color:${C.text};
-          background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
-          box-shadow:inset 1.4px 1.4px 1px -1px rgba(255,255,255,.5),inset -1.2px -1.2px 1px -1px rgba(255,255,255,.28),inset 0 0 12px 2px rgba(255,255,255,.05),0 8px 20px -8px rgba(0,0,0,.45);}
-        .smx-tbtn--ghost:hover{background:rgba(255,255,255,.12);transform:translateY(-1px);}
+          transition:background .18s ease,transform .15s ease;}
+        .smx-tbtn:hover{background:${C.orangeHi};}
+        .smx-tbtn:active{transform:translateY(1px);}
+        .smx-tbtn--ghost{background:transparent;color:${C.cream2};border:1px solid ${C.lineHi};}
+        .smx-tbtn--ghost:hover{background:rgba(255,255,255,.05);color:${C.text};border-color:${C.cream2};}
         .smx-play{transition:transform .2s ease;}
         .smx-play:hover{transform:scale(1.06);}
         .smx-trust{overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);}
@@ -1312,8 +1259,6 @@ export default function SadocmixHome() {
         .smx-trust__item span{font-family:${F.display};font-weight:700;font-size:clamp(17px,2vw,22px);color:${C.text};white-space:nowrap;letter-spacing:.01em;}
         @keyframes smxtrust{to{transform:translateX(-50%);}}
         @media(prefers-reduced-motion:reduce){.smx-trust__track{animation:none!important;}[data-reveal]{filter:none;}}
-        .smx-marquee{display:flex;gap:0;animation:smxmarq 28s linear infinite;}
-        @keyframes smxmarq{to{transform:translateX(-50%);}}
         .smx-navlink{position:relative;}
         .smx-navlink:hover{color:${C.text}!important;}
         .smx-footlink{transition:color .25s ease;}
@@ -1500,14 +1445,12 @@ export default function SadocmixHome() {
               </h1>
             </Reveal>
             <Reveal delay={180} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 34 }}>
-                <button onClick={() => go("player")} className="smx-cta smx-magnetic">
+              <button onClick={() => go("player")} className="smx-cta smx-magnetic">
                 <Play size={17} fill="currentColor" /> Escuchar el A/B
               </button>
-              <FlipButton
-                text1="Ver servicios"
-                text2="Escuchar A/B"
-                onClick={() => go("servicios")}
-              />
+              <button onClick={() => go("servicios")} className="smx-cta smx-cta--ghost smx-magnetic">
+                Ver servicios <ArrowRight size={17} />
+              </button>
             </Reveal>
             <Reveal delay={300} style={{ marginTop: 38, paddingTop: 26, borderTop: `1px solid ${C.line}` }}>
               <div className="smx-specs">

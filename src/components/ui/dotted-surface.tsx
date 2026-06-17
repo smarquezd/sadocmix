@@ -113,13 +113,34 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
       positionAttribute.needsUpdate = true;
       renderer.render(scene, camera);
-      count += 0.06;
+      count += 0.12;
     };
 
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
+    // Animación limitada a ~30fps (la onda es lenta; 60fps no aporta y gasta
+    // GPU de fondo todo el rato). Se pausa cuando la pestaña está oculta.
+    const FRAME_MS = 1000 / 30;
+    let lastFrame = 0;
+    let running = false;
+    const loop = (now: number) => {
+      animationId = requestAnimationFrame(loop);
+      if (now - lastFrame < FRAME_MS) return;
+      lastFrame = now;
       renderWave();
     };
+    const start = () => {
+      if (running) return;
+      running = true;
+      animationId = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(animationId);
+    };
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else if (!reducedMotion) start();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
 
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -133,7 +154,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
     if (reducedMotion) {
       renderWave(); // un frame fijo: textura sin animación
     } else {
-      animate();
+      start();
     }
 
     sceneRef.current = {
@@ -146,7 +167,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
     };
 
     return () => {
+      stop();
       window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", onVisibility);
 
       if (sceneRef.current) {
         cancelAnimationFrame(sceneRef.current.animationId);
