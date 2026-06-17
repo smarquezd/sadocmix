@@ -1669,7 +1669,7 @@ export default function SadocmixHome() {
                 price={p.price}
                 cover={p.cover}
                 delay={i * 50}
-                onBuy={() => showToast("Próximamente disponible")}
+                onBuy={() => { window.location.href = `/recursos/${p.slug}`; }}
               />
             ))}
           </div>

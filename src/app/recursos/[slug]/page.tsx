@@ -254,6 +254,7 @@ function DawPicker({ daws, value, onChange }) {
 export default function Page({ params }) {
   const { slug } = use(params);
   const [dawIdx, setDawIdx] = useState(0);
+  const [cargando, setCargando] = useState(false);
   const producto = getProducto(slug);
 
   /* --- producto inexistente --- */
@@ -296,16 +297,36 @@ export default function Page({ params }) {
     background: C.orange, color: C.ink, border: "none", cursor: "pointer",
     padding: "15px 28px", borderRadius: 999, textDecoration: "none",
   };
-  const CompraBtn = () =>
-    linkActivo ? (
-      <a className="rec-btn" href={linkActivo} target="_blank" rel="noopener noreferrer" style={compraBtnStyle}>
-        {free ? "Descargar" : "Comprar ahora"} <ArrowRight size={17} />
-      </a>
-    ) : (
-      <button className="rec-btn" style={compraBtnStyle} onClick={() => alert("Disponible próximamente")}>
-        {free ? "Descargar" : "Comprar ahora"} <ArrowRight size={17} />
-      </button>
-    );
+  // Inicia el pago: pide al backend una Checkout Session de Stripe para este
+  // producto + DAW y redirige a la pasarela. (Los productos gratuitos aún no
+  // tienen flujo de descarga directa; se resolverá aparte.)
+  const comprar = async () => {
+    if (free) { alert("Descarga gratuita: próximamente"); return; }
+    setCargando(true);
+    try {
+      const r = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, daw: (dawSel && dawSel.nombre) || "" }),
+      });
+      const d = await r.json();
+      if (d.url) { window.location.href = d.url; return; }
+      alert(d.error || "No se pudo iniciar el pago");
+    } catch {
+      alert("Error de conexión. Inténtalo de nuevo.");
+    }
+    setCargando(false);
+  };
+  const CompraBtn = () => (
+    <button
+      className="rec-btn"
+      style={{ ...compraBtnStyle, opacity: cargando ? 0.6 : 1, cursor: cargando ? "wait" : "pointer" }}
+      onClick={comprar}
+      disabled={cargando}
+    >
+      {cargando ? "Redirigiendo…" : free ? "Descargar" : "Comprar ahora"} <ArrowRight size={17} />
+    </button>
+  );
 
   return (
     <div style={{
