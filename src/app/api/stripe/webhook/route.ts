@@ -23,13 +23,21 @@ export async function POST(req: NextRequest) {
   }
 
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as {
-      customer_details?: { email?: string | null } | null;
-      metadata?: { slug?: string; daw?: string } | null;
-    };
-    const email = session.customer_details?.email || "";
-    const slug = session.metadata?.slug || "";
-    const daw = session.metadata?.daw || "";
+    // Recuperamos la sesión COMPLETA desde Stripe a partir de su id. Así
+    // funciona tanto con payload completo (snapshot) como con el "thin"/Breve,
+    // que solo trae IDs sin customer_details ni metadata.
+    const obj = event.data.object as { id?: string };
+    let email = "";
+    let slug = "";
+    let daw = "";
+    try {
+      const session = await getStripe().checkout.sessions.retrieve(obj.id || "");
+      email = session.customer_details?.email || "";
+      slug = (session.metadata?.slug as string) || "";
+      daw = (session.metadata?.daw as string) || "";
+    } catch (e) {
+      console.error("[webhook] no se pudo recuperar la sesión", e);
+    }
 
     if (email && slug) {
       const producto = getProducto(slug);
