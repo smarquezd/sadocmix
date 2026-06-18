@@ -10,20 +10,6 @@ import { enviarDescarga } from "@/lib/email";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Diagnóstico temporal: GET muestra qué variables ve el sitio en producción
-// (sin revelar secretos). Quitar cuando el pago + email funcionen.
-export async function GET() {
-  const s = process.env.STRIPE_WEBHOOK_SECRET || "";
-  return Response.json({
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? "ok" : "FALTA",
-    STRIPE_WEBHOOK_SECRET: s ? `${s.slice(0, 6)}…len=${s.length}` : "FALTA",
-    RESEND_API_KEY: process.env.RESEND_API_KEY ? "ok" : "FALTA",
-    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN ? "ok" : "FALTA",
-    DOWNLOAD_SIGNING_SECRET: process.env.DOWNLOAD_SIGNING_SECRET ? "ok" : "FALTA",
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "FALTA",
-  });
-}
-
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature") || "";

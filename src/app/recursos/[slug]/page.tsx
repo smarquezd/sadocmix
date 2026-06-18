@@ -12,7 +12,7 @@
 
 import { use, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Play, Pause, ArrowLeft, ArrowRight, Check, Headphones, ChevronDown } from "lucide-react";
+import { Play, Pause, ArrowLeft, ArrowRight, Check, Headphones, ChevronDown, X } from "lucide-react";
 import { getProducto } from "../../../data/productos";
 import { DottedSurface } from "@/components/ui/dotted-surface";
 
@@ -255,7 +255,21 @@ export default function Page({ params }) {
   const { slug } = use(params);
   const [dawIdx, setDawIdx] = useState(0);
   const [cargando, setCargando] = useState(false);
+  const [compraOk, setCompraOk] = useState(false);
   const producto = getProducto(slug);
+
+  // Tras pagar, Stripe redirige a …/recursos/<slug>?compra=ok. Mostramos el
+  // aviso de "revisa tu correo" y limpiamos el parámetro para que un refresco
+  // no lo repita.
+  useEffect(() => {
+    const qp = new URLSearchParams(window.location.search);
+    if (qp.get("compra") === "ok") {
+      setCompraOk(true);
+      qp.delete("compra");
+      const qs = qp.toString();
+      window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : ""));
+    }
+  }, []);
 
   /* --- producto inexistente --- */
   if (!producto) {
@@ -393,6 +407,41 @@ export default function Page({ params }) {
           </Link>
         </div>
       </header>
+
+      {/* ---------------- aviso de compra confirmada ---------------- */}
+      {compraOk && (
+        <div style={{ padding: "20px clamp(16px,3vw,28px) 0" }} role="status" aria-live="polite">
+          <div style={{
+            maxWidth: 1040, margin: "0 auto",
+            display: "flex", alignItems: "flex-start", gap: 14,
+            background: "rgba(232,96,10,.10)", border: "1px solid rgba(232,96,10,.45)",
+            borderRadius: 16, padding: "16px 18px",
+          }}>
+            <span style={{
+              width: 32, height: 32, borderRadius: "50%", flex: "none",
+              background: C.orange, color: C.ink,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Check size={18} />
+            </span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: F.display, fontWeight: 800, fontSize: 16, color: C.text, marginBottom: 3 }}>
+                ¡Pago confirmado! Gracias por tu compra.
+              </div>
+              <p style={{ fontFamily: F.body, fontSize: 13.5, lineHeight: 1.55, color: C.muted, margin: 0 }}>
+                Te hemos enviado el enlace de descarga a tu correo. Si no lo ves en unos minutos, revisa spam o promociones. El enlace caduca en 7 días.
+              </p>
+            </div>
+            <button onClick={() => setCompraOk(false)} aria-label="Cerrar" style={{
+              flex: "none", width: 30, height: 30, borderRadius: 8, cursor: "pointer",
+              background: "transparent", border: `1px solid ${C.line}`, color: C.muted,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ---------------- hero ---------------- */}
       <section style={{ padding: "clamp(36px,6vw,72px) clamp(16px,3vw,28px)" }}>
