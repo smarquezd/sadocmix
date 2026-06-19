@@ -552,7 +552,7 @@ export default function Page({ params }) {
             </div>
           )}
           <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", maxWidth: 860 }}>
-            {(mostrarTodosPlugins ? plugins : plugins.slice(0, 5)).map((p, i) => (
+            {(mostrarTodosPlugins ? plugins : plugins.slice(0, 8)).map((p, i) => (
               <div key={i} style={{
                 border: `1px solid ${C.line}`, borderRadius: 14,
                 padding: "14px 12px", background: "rgba(255,255,255,.02)",
