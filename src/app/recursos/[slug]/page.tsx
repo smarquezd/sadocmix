@@ -292,6 +292,7 @@ export default function Page({ params }) {
   const {
     badge, title, price, cover, comprarLink, tagline, descripcionLarga,
     puntos, plugins, requisitos, incluye, demoAntes, demoDespues, video, daws,
+    pluginStats,
   } = producto;
   const free = price === "Gratis";
   const tieneDemo = demoAntes && demoDespues;
@@ -529,6 +530,21 @@ export default function Page({ params }) {
       {/* ---------------- plugins ---------------- */}
       {plugins && plugins.length > 0 && (
         <Block eyebrow="Cadena" eyebrowIcon={<IsotipoMark size={13} />} title="Plugins utilizados" bg={C.bg2}>
+          {pluginStats && (
+            <div style={{
+              display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center",
+              marginBottom: 18, borderRadius: 14, background: "rgba(255,255,255,.03)",
+              padding: "16px 18px", border: `1px solid ${C.line}`,
+              maxWidth: 700,
+            }}>
+              <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 14, color: C.text }}>
+                {pluginStats.distintos} plugins distintos
+              </div>
+              <div style={{ fontFamily: F.body, fontSize: 14, color: C.muted }}>
+                {pluginStats.instancias} instancias totales en la sesión
+              </div>
+            </div>
+          )}
           <div style={{ border: `1px solid ${C.line}`, borderRadius: 16, overflow: "hidden", maxWidth: 620 }}>
             {plugins.map((p, i) => (
               <div key={i} style={{
