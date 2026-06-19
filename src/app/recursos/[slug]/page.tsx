@@ -533,7 +533,7 @@ export default function Page({ params }) {
         <Block
           eyebrow="Cadena"
           eyebrowIcon={<IsotipoMark size={13} />}
-          title={pluginStats ? "Plugins incluidos" : "Plugins utilizados"}
+          title="Plugins utilizados"
           bg={C.bg2}
         >
           {pluginStats && (
@@ -551,17 +551,17 @@ export default function Page({ params }) {
               </div>
             </div>
           )}
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", maxWidth: 860 }}>
+          <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", maxWidth: 860 }}>
             {(mostrarTodosPlugins ? plugins : plugins.slice(0, 5)).map((p, i) => (
               <div key={i} style={{
-                border: `1px solid ${C.line}`, borderRadius: 16,
-                padding: "18px 16px", background: "rgba(255,255,255,.02)",
-                minHeight: 92, display: "flex", flexDirection: "column", justifyContent: "space-between",
+                border: `1px solid ${C.line}`, borderRadius: 14,
+                padding: "14px 12px", background: "rgba(255,255,255,.02)",
+                minHeight: 76, display: "flex", flexDirection: "column", justifyContent: "space-between",
               }}>
-                <div style={{ fontFamily: F.mono, fontSize: 11, color: C.faint, textTransform: "uppercase", letterSpacing: ".12em" }}>
+                <div style={{ fontFamily: F.mono, fontSize: 10, color: C.faint, textTransform: "uppercase", letterSpacing: ".12em" }}>
                   {p.empresa}
                 </div>
-                <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 15, color: C.text, marginTop: 10, lineHeight: 1.3 }}>
+                <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 14, color: C.text, marginTop: 8, lineHeight: 1.25 }}>
                   {p.nombre}
                 </div>
               </div>
