@@ -256,6 +256,7 @@ export default function Page({ params }) {
   const [dawIdx, setDawIdx] = useState(0);
   const [cargando, setCargando] = useState(false);
   const [compraOk, setCompraOk] = useState(false);
+  const [mostrarTodosPlugins, setMostrarTodosPlugins] = useState(false);
   const producto = getProducto(slug);
 
   // Tras pagar, Stripe redirige a …/recursos/<slug>?compra=ok. Mostramos el
@@ -529,7 +530,12 @@ export default function Page({ params }) {
 
       {/* ---------------- plugins ---------------- */}
       {plugins && plugins.length > 0 && (
-        <Block eyebrow="Cadena" eyebrowIcon={<IsotipoMark size={13} />} title="Plugins utilizados" bg={C.bg2}>
+        <Block
+          eyebrow="Cadena"
+          eyebrowIcon={<IsotipoMark size={13} />}
+          title={pluginStats ? "Plugins incluidos" : "Plugins utilizados"}
+          bg={C.bg2}
+        >
           {pluginStats && (
             <div style={{
               display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center",
@@ -545,25 +551,35 @@ export default function Page({ params }) {
               </div>
             </div>
           )}
-          <div style={{ border: `1px solid ${C.line}`, borderRadius: 16, overflow: "hidden", maxWidth: 620 }}>
-            {plugins.map((p, i) => (
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", maxWidth: 860 }}>
+            {(mostrarTodosPlugins ? plugins : plugins.slice(0, 5)).map((p, i) => (
               <div key={i} style={{
-                display: "flex", alignItems: "center", gap: 14, padding: "14px 16px",
-                borderTop: i === 0 ? "none" : `1px solid ${C.line}`,
-                background: i % 2 ? "transparent" : "rgba(244,236,224,.02)",
+                border: `1px solid ${C.line}`, borderRadius: 16,
+                padding: "18px 16px", background: "rgba(255,255,255,.02)",
+                minHeight: 92, display: "flex", flexDirection: "column", justifyContent: "space-between",
               }}>
-                <span style={{ fontFamily: F.mono, fontSize: 11, color: C.faint, width: 24, flex: "none" }}>
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: 15, color: C.text, flex: 1 }}>
-                  {p.nombre}
-                </span>
-                <span style={{ fontFamily: F.mono, fontSize: 12, color: C.muted, flex: "none" }}>
+                <div style={{ fontFamily: F.mono, fontSize: 11, color: C.faint, textTransform: "uppercase", letterSpacing: ".12em" }}>
                   {p.empresa}
-                </span>
+                </div>
+                <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 15, color: C.text, marginTop: 10, lineHeight: 1.3 }}>
+                  {p.nombre}
+                </div>
               </div>
             ))}
           </div>
+          {plugins.length > 5 && (
+            <button
+              type="button"
+              onClick={() => setMostrarTodosPlugins((prev) => !prev)}
+              style={{
+                marginTop: 18, border: "none", cursor: "pointer",
+                fontFamily: F.display, fontWeight: 700, fontSize: 13,
+                color: C.orange, background: "transparent", padding: 0,
+              }}
+            >
+              {mostrarTodosPlugins ? "Ocultar plugins" : "Ver todos los plugins"}
+            </button>
+          )}
         </Block>
       )}
 
