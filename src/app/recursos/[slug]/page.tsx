@@ -293,7 +293,7 @@ export default function Page({ params }) {
   const {
     badge, title, price, cover, comprarLink, tagline, descripcionLarga,
     puntos, plugins, requisitos, incluye, demoAntes, demoDespues, video, daws,
-    pluginStats,
+    pluginStats, pluginPreview, pluginCategories,
   } = producto;
   const free = price === "Gratis";
   const tieneDemo = demoAntes && demoDespues;
@@ -551,22 +551,50 @@ export default function Page({ params }) {
               </div>
             </div>
           )}
-          <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", maxWidth: 860 }}>
-            {(mostrarTodosPlugins ? plugins : plugins.slice(0, 8)).map((p, i) => (
-              <div key={i} style={{
-                border: `1px solid ${C.line}`, borderRadius: 14,
-                padding: "14px 12px", background: "rgba(255,255,255,.02)",
-                minHeight: 76, display: "flex", flexDirection: "column", justifyContent: "space-between",
-              }}>
-                <div style={{ fontFamily: F.mono, fontSize: 10, color: C.faint, textTransform: "uppercase", letterSpacing: ".12em" }}>
-                  {p.empresa}
+          {!mostrarTodosPlugins ? (
+            <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", maxWidth: 860 }}>
+              {(pluginPreview && pluginPreview.length ? pluginPreview : plugins.slice(0, 5)).map((p, i) => (
+                <div key={i} style={{
+                  border: `1px solid ${C.line}`, borderRadius: 14,
+                  padding: "14px 12px", background: "rgba(255,255,255,.02)",
+                  minHeight: 76, display: "flex", flexDirection: "column", justifyContent: "space-between",
+                }}>
+                  <div style={{ fontFamily: F.mono, fontSize: 10, color: C.faint, textTransform: "uppercase", letterSpacing: ".12em" }}>
+                    {p.empresa}
+                  </div>
+                  <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 14, color: C.text, marginTop: 8, lineHeight: 1.25 }}>
+                    {p.nombre}
+                  </div>
                 </div>
-                <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 14, color: C.text, marginTop: 8, lineHeight: 1.25 }}>
-                  {p.nombre}
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: "grid", gap: 18, maxWidth: 860 }}>
+              {pluginCategories && pluginCategories.length > 0 && pluginCategories.map((cat, ci) => (
+                <div key={ci} style={{ border: `1px solid ${C.line}`, borderRadius: 16, padding: "18px 18px", background: "rgba(255,255,255,.02)" }}>
+                  <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 15, color: C.text, marginBottom: 14 }}>
+                    {cat.categoria}
+                  </div>
+                  <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))" }}>
+                    {cat.plugins.map((p, pi) => (
+                      <div key={pi} style={{
+                        border: `1px solid ${C.line}`, borderRadius: 14,
+                        padding: "12px 12px", background: "rgba(255,255,255,.01)",
+                        minHeight: 68, display: "flex", flexDirection: "column", justifyContent: "space-between",
+                      }}>
+                        <div style={{ fontFamily: F.mono, fontSize: 10, color: C.faint, textTransform: "uppercase", letterSpacing: ".12em" }}>
+                          {p.fabricante}
+                        </div>
+                        <div style={{ fontFamily: F.display, fontWeight: 700, fontSize: 14, color: C.text, marginTop: 8, lineHeight: 1.25 }}>
+                          {p.plugin}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
           {plugins.length > 5 && (
             <button
               type="button"
