@@ -18,7 +18,21 @@ import { DottedSurface } from "@/components/ui/dotted-surface";
 /*  el logo completo con el texto pequeño genera una malla enorme y pesada.  */
 const SVG3D = dynamic(() => import("3dsvg").then((m) => ({ default: m.SVG3D })), {
   ssr: false,
+  loading: () => <HeroLogoPlaceholder />,
 });
+
+function HeroLogoPlaceholder() {
+  return (
+    <div style={{
+      width: "min(400px, 82vw)", height: "min(400px, 82vw)",
+      display: "grid", placeItems: "center",
+      borderRadius: 32, background: "rgba(255,255,255,.025)",
+      border: "1px solid rgba(255,255,255,.08)",
+    }}>
+      <IsotipoMark size={88} color="rgba(255,255,255,.24)" />
+    </div>
+  );
+}
 
 /* Isotipo de la marca como SVG en línea, para usarlo como icono pequeño. */
 function IsotipoMark({ size = 22, color = "#E8600A" }) {
@@ -1082,6 +1096,10 @@ export default function SadocmixHome() {
   const [toast, setToast] = useState("");
   const [infoProduct, setInfoProduct] = useState(null);
   const toastTimer = useRef(null);
+
+  useEffect(() => {
+    import("3dsvg");
+  }, []);
 
   const showToast = (msg) => {
     setToast(msg);
