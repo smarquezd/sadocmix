@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from "react";
 import {
   Play, Pause, Volume2, VolumeX, Check, ArrowRight, ArrowUpRight,
-  ShoppingBag, Menu, X, Disc3, Plus, Headphones, Sparkles, Info,
+  Menu, X, Disc3, Plus, Headphones, Sparkles, Info,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -23,8 +23,7 @@ const SVG3D = dynamic(() => import("3dsvg").then((m) => ({ default: m.SVG3D })),
 
 function HeroLogoPlaceholder() {
   return (
-    <div style={{
-      width: "min(400px, 82vw)", height: "min(400px, 82vw)",
+    <div className="smx-hero3d" style={{
       display: "grid", placeItems: "center",
       borderRadius: 32, background: "rgba(255,255,255,.025)",
       border: "1px solid rgba(255,255,255,.08)",
@@ -61,7 +60,7 @@ const ISOTIPO_3D_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="332.63 
    en false para que no se pueda arrastrar. */
 function HeroLogo3D() {
   return (
-    <div style={{ width: "min(400px, 82vw)", height: "min(400px, 82vw)" }}>
+    <div className="smx-hero3d">
       <SVG3D
         svg={ISOTIPO_3D_SVG}
         depth={0.9}
@@ -1402,14 +1401,8 @@ export default function SadocmixHome() {
           backdropFilter: "blur(20px) saturate(150%)", WebkitBackdropFilter: "blur(20px) saturate(150%)",
           boxShadow: "0 18px 50px -20px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06)",
         }}>
-          <div onClick={() => go("top")} style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer", marginRight: "auto" }}>
-            {/* móvil: isotipo + wordmark corto (más limpio y pequeño) */}
-            <span className="smx-logo-mark" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <IsotipoMark size={22} color={C.orange} />
-              <span style={{ fontFamily: F.display, fontWeight: 800, fontSize: 17, color: C.text, letterSpacing: "-.01em" }}>Sadoc</span>
-            </span>
-            {/* escritorio: lockup completo */}
-            <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" className="smx-logo" style={{ height: 34, width: "auto", display: "none" }} />
+          <div onClick={() => go("top")} style={{ display: "flex", alignItems: "center", cursor: "pointer", marginRight: "auto" }}>
+            <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" className="smx-logo" style={{ height: 28, width: "auto", display: "block" }} />
           </div>
           <div className="smx-navdesktop" style={{ display: "none", gap: 28, alignItems: "center" }}>
             {nav.map(([label, id]) => (
@@ -1419,7 +1412,6 @@ export default function SadocmixHome() {
               }}>{label}</span>
             ))}
           </div>
-          <ShoppingBag size={19} color={C.cream2} style={{ cursor: "pointer" }} />
           <button className="smx-cta" style={{ fontSize: 12.5, padding: "9px 16px" }}>Entrar</button>
           <button onClick={() => setMenuOpen((o) => !o)} className="smx-navmobile" style={{
             display: "flex", background: "transparent", border: "none", cursor: "pointer", color: C.text,
@@ -1441,7 +1433,7 @@ export default function SadocmixHome() {
           </div>
         )}
       </header>
-      <style>{`@media(min-width:880px){.smx-navdesktop{display:flex!important;}.smx-navmobile{display:none!important;}.smx-logo{height:34px!important;display:block!important;}.smx-logo-mark{display:none!important;}.smx-navglass{padding:12px 14px 12px 24px!important;gap:18px!important;}}`}</style>
+      <style>{`@media(min-width:880px){.smx-navdesktop{display:flex!important;}.smx-navmobile{display:none!important;}.smx-logo{height:34px!important;}.smx-navglass{padding:12px 14px 12px 24px!important;gap:18px!important;}}`}</style>
 
       {/* ---------------- HERO ---------------- */}
       <section id="top" style={{ position: "relative", padding: "clamp(48px,7vw,96px) clamp(16px,3vw,28px)" }}>
@@ -1530,7 +1522,7 @@ export default function SadocmixHome() {
           </Reveal>
         </div>
       </section>
-      <style>{`@media(min-width:900px){.smx-herogrid{grid-template-columns:1.05fr .95fr!important;}}`}</style>
+      <style>{`.smx-hero3d{width:min(240px,49vw);height:min(240px,49vw);}@media(min-width:900px){.smx-herogrid{grid-template-columns:1.05fr .95fr!important;}.smx-hero3d{width:min(400px,82vw);height:min(400px,82vw);}}`}</style>
 
       {/* ---------------- TRUSTED BY ---------------- */}
       <TrustedBy items={TRUSTED} />
@@ -1554,12 +1546,12 @@ export default function SadocmixHome() {
           {/* stats */}
           <Reveal delay={120} style={{
             display: "grid", gridTemplateColumns: "1fr", gap: 1,
-            marginTop: 42, background: C.line,
+            marginTop: 30, background: C.line,
             borderRadius: 22, overflow: "hidden",
           }} className="smx-stats smx-glass">
             {[["11", "Certificaciones"], ["1.2B+", "Streams"], ["230+", "Artistas"]].map(([n, l]) => (
-              <div key={l} style={{ background: "rgba(10,8,6,.55)", padding: "26px 24px" }}>
-                <div style={{ fontFamily: F.display, fontWeight: 800, fontSize: "clamp(30px,3.5vw,46px)", color: C.orange }}>
+              <div key={l} style={{ background: "rgba(10,8,6,.55)", padding: "18px 20px" }}>
+                <div style={{ fontFamily: F.display, fontWeight: 800, fontSize: "clamp(22px,3vw,34px)", color: C.orange }}>
                   <CountUp value={n} />
                 </div>
                 <div style={{ fontFamily: F.mono, fontSize: 12, color: C.muted, letterSpacing: ".06em", marginTop: 4 }}>{l}</div>
