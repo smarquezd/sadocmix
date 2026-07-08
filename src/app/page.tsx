@@ -1497,7 +1497,7 @@ export default function SadocmixHome() {
           <Reveal delay={200} style={{ display: "flex", justifyContent: "center", position: "relative" }}>
             <div style={{ position: "relative" }}>
               <HeroLogo3D />
-              <div className="smx-float" style={{
+              <div className="smx-float smx-float-plat" style={{
                 position: "absolute", top: 30, right: -1, background: C.cream, color: C.ink,
                 fontFamily: F.display, fontWeight: 700, fontSize: 13, padding: "10px 16px",
                 borderRadius: 10,
@@ -1509,7 +1509,7 @@ export default function SadocmixHome() {
                   boxShadow: "inset 0 0 0 .5px rgba(255,255,255,.5), 0 1px 3px rgba(0,0,0,.35)",
                 }} /> 6× Platino
               </div>
-              <div onClick={() => go("player")} className="smx-float smx-glass" style={{
+              <div onClick={() => go("player")} className="smx-float smx-glass smx-float-live" style={{
                 position: "absolute", bottom: 6, left: -26, color: C.text,
                 fontFamily: F.mono, fontSize: 12, padding: "11px 16px", borderRadius: 10,
                 cursor: "pointer",
@@ -1522,7 +1522,7 @@ export default function SadocmixHome() {
           </Reveal>
         </div>
       </section>
-      <style>{`.smx-hero3d{width:min(240px,49vw);height:min(240px,49vw);}@media(min-width:900px){.smx-herogrid{grid-template-columns:1.05fr .95fr!important;}.smx-hero3d{width:min(400px,82vw);height:min(400px,82vw);}}`}</style>
+      <style>{`.smx-hero3d{width:min(276px,56vw);height:min(276px,56vw);}.smx-float-plat{font-size:11px!important;padding:7px 13px!important;}.smx-float-plat>span{width:11px!important;height:11px!important;}.smx-float-live{font-size:10.5px!important;padding:8px 13px!important;}@media(min-width:900px){.smx-herogrid{grid-template-columns:1.05fr .95fr!important;}.smx-hero3d{width:min(400px,82vw);height:min(400px,82vw);}.smx-float-plat{font-size:13px!important;padding:10px 16px!important;}.smx-float-plat>span{width:13px!important;height:13px!important;}.smx-float-live{font-size:12px!important;padding:11px 16px!important;}}`}</style>
 
       {/* ---------------- TRUSTED BY ---------------- */}
       <TrustedBy items={TRUSTED} />
