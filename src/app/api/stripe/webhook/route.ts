@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       const token = signDownload(slug, daw);
       const url = `${site}/api/descarga?token=${encodeURIComponent(token)}`;
       try {
-        await enviarDescarga({ to: email, titulo: producto?.title || "tu compra", url });
+        await enviarDescarga({ to: email, titulo: producto?.title || "tu compra", url, daw });
       } catch (e) {
         console.error("[webhook] fallo al enviar email", e);
       }
