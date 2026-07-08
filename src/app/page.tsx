@@ -1271,9 +1271,9 @@ export default function SadocmixHome() {
         .smx-play:hover{transform:scale(1.06);}
         .smx-trust{overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);}
         .smx-trust__track{display:flex;width:max-content;align-items:center;animation:smxtrust 38s linear infinite;}
-        .smx-trust__item{flex:none;margin:0 clamp(16px,3.4vw,44px);width:clamp(44px,6.4vw,74px);height:clamp(44px,6.4vw,74px);display:flex;align-items:center;justify-content:center;opacity:.55;transition:opacity .3s ease;}
+        .smx-trust__item{flex:none;margin:0 clamp(14px,3.2vw,44px);width:clamp(38px,6vw,74px);height:clamp(38px,6vw,74px);display:flex;align-items:center;justify-content:center;opacity:.55;transition:opacity .3s ease;}
         .smx-trust__item:hover{opacity:1;}
-        .smx-trustby-title{transform:scale(.72);}
+        .smx-trustby-title{transform:scale(.58);}
         @media(min-width:680px){.smx-trustby-title{transform:none;}}
         .smx-trust__item img{max-width:none;object-fit:contain;display:block;filter:grayscale(1) brightness(0) invert(1);}
         .smx-trust__item span{font-family:${F.display};font-weight:700;font-size:clamp(17px,2vw,22px);color:${C.text};white-space:nowrap;letter-spacing:.01em;}
@@ -1402,8 +1402,14 @@ export default function SadocmixHome() {
           backdropFilter: "blur(20px) saturate(150%)", WebkitBackdropFilter: "blur(20px) saturate(150%)",
           boxShadow: "0 18px 50px -20px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06)",
         }}>
-          <div onClick={() => go("top")} style={{ display: "flex", alignItems: "center", cursor: "pointer", marginRight: "auto" }}>
-            <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" className="smx-logo" style={{ height: 26, width: "auto", display: "block" }} />
+          <div onClick={() => go("top")} style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer", marginRight: "auto" }}>
+            {/* móvil: isotipo + wordmark corto (más limpio y pequeño) */}
+            <span className="smx-logo-mark" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <IsotipoMark size={22} color={C.orange} />
+              <span style={{ fontFamily: F.display, fontWeight: 800, fontSize: 17, color: C.text, letterSpacing: "-.01em" }}>Sadoc</span>
+            </span>
+            {/* escritorio: lockup completo */}
+            <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" className="smx-logo" style={{ height: 34, width: "auto", display: "none" }} />
           </div>
           <div className="smx-navdesktop" style={{ display: "none", gap: 28, alignItems: "center" }}>
             {nav.map(([label, id]) => (
@@ -1435,7 +1441,7 @@ export default function SadocmixHome() {
           </div>
         )}
       </header>
-      <style>{`@media(min-width:880px){.smx-navdesktop{display:flex!important;}.smx-navmobile{display:none!important;}.smx-logo{height:34px!important;}.smx-navglass{padding:12px 14px 12px 24px!important;gap:18px!important;}}`}</style>
+      <style>{`@media(min-width:880px){.smx-navdesktop{display:flex!important;}.smx-navmobile{display:none!important;}.smx-logo{height:34px!important;display:block!important;}.smx-logo-mark{display:none!important;}.smx-navglass{padding:12px 14px 12px 24px!important;gap:18px!important;}}`}</style>
 
       {/* ---------------- HERO ---------------- */}
       <section id="top" style={{ position: "relative", padding: "clamp(48px,7vw,96px) clamp(16px,3vw,28px)" }}>
