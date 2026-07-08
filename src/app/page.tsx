@@ -257,7 +257,7 @@ function TrustedBy({ items }) {
     <>
       {/* título por encima de la línea separadora, sobre el fondo negro */}
       <div style={{ padding: "clamp(40px,6vw,64px) 0 clamp(28px,4vw,40px)" }}>
-        <Wordmark src="/img/trusted-by.png" alt="Trusted by" textH={27} opacity={0.72} />
+        <Wordmark className="smx-trustby-title" src="/img/trusted-by.png" alt="Trusted by" textH={27} opacity={0.72} />
       </div>
       <section style={{
         padding: "clamp(34px,5vw,50px) 0", background: C.bg2,
@@ -1271,8 +1271,10 @@ export default function SadocmixHome() {
         .smx-play:hover{transform:scale(1.06);}
         .smx-trust{overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);}
         .smx-trust__track{display:flex;width:max-content;align-items:center;animation:smxtrust 38s linear infinite;}
-        .smx-trust__item{flex:none;margin:0 clamp(22px,3.4vw,44px);width:clamp(54px,6.4vw,74px);height:clamp(54px,6.4vw,74px);display:flex;align-items:center;justify-content:center;opacity:.55;transition:opacity .3s ease;}
+        .smx-trust__item{flex:none;margin:0 clamp(16px,3.4vw,44px);width:clamp(44px,6.4vw,74px);height:clamp(44px,6.4vw,74px);display:flex;align-items:center;justify-content:center;opacity:.55;transition:opacity .3s ease;}
         .smx-trust__item:hover{opacity:1;}
+        .smx-trustby-title{transform:scale(.72);}
+        @media(min-width:680px){.smx-trustby-title{transform:none;}}
         .smx-trust__item img{max-width:none;object-fit:contain;display:block;filter:grayscale(1) brightness(0) invert(1);}
         .smx-trust__item span{font-family:${F.display};font-weight:700;font-size:clamp(17px,2vw,22px);color:${C.text};white-space:nowrap;letter-spacing:.01em;}
         @keyframes smxtrust{to{transform:translateX(-50%);}}
@@ -1395,13 +1397,13 @@ export default function SadocmixHome() {
       <header style={{ position: "sticky", top: 0, zIndex: 60, padding: "16px clamp(14px,3vw,28px) 0" }}>
         <nav className="smx-navglass" style={{
           maxWidth: 1240, margin: "0 auto", position: "relative", background: "rgba(9,7,5,.58)", borderRadius: 999,
-          padding: "12px 14px 12px 24px", display: "flex", alignItems: "center", gap: 18,
+          padding: "11px 12px 11px 18px", display: "flex", alignItems: "center", gap: 14,
           border: `1px solid ${C.line}`,
           backdropFilter: "blur(20px) saturate(150%)", WebkitBackdropFilter: "blur(20px) saturate(150%)",
           boxShadow: "0 18px 50px -20px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06)",
         }}>
           <div onClick={() => go("top")} style={{ display: "flex", alignItems: "center", cursor: "pointer", marginRight: "auto" }}>
-            <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" style={{ height: 34, width: "auto", display: "block" }} />
+            <img src={LOGO_WHITE} alt="Sadoc Mixing & Mastering" className="smx-logo" style={{ height: 26, width: "auto", display: "block" }} />
           </div>
           <div className="smx-navdesktop" style={{ display: "none", gap: 28, alignItems: "center" }}>
             {nav.map(([label, id]) => (
@@ -1433,7 +1435,7 @@ export default function SadocmixHome() {
           </div>
         )}
       </header>
-      <style>{`@media(min-width:880px){.smx-navdesktop{display:flex!important;}.smx-navmobile{display:none!important;}}`}</style>
+      <style>{`@media(min-width:880px){.smx-navdesktop{display:flex!important;}.smx-navmobile{display:none!important;}.smx-logo{height:34px!important;}.smx-navglass{padding:12px 14px 12px 24px!important;gap:18px!important;}}`}</style>
 
       {/* ---------------- HERO ---------------- */}
       <section id="top" style={{ position: "relative", padding: "clamp(48px,7vw,96px) clamp(16px,3vw,28px)" }}>
@@ -1562,7 +1564,7 @@ export default function SadocmixHome() {
 
           {/* disc wall */}
           <div className="smx-discwall" style={{
-            display: "grid", gap: 18, marginTop: 26, gridTemplateColumns: "1fr",
+            display: "grid", gap: 12, marginTop: 26, gridTemplateColumns: "repeat(2,minmax(0,1fr))",
           }}>
             {[
               { tier: "platino", mult: 4, title: "Morena", artist: "Beéle", streams: "400M", cover: "/img/discos/morena.jpg" },
@@ -1574,7 +1576,7 @@ export default function SadocmixHome() {
             ))}
           </div>
           <style>{`
-            @media(min-width:680px){.smx-discwall{grid-template-columns:repeat(2,1fr)!important;}}
+            @media(min-width:680px){.smx-discwall{grid-template-columns:repeat(2,1fr)!important;gap:18px!important;}}
             @media(min-width:1080px){.smx-discwall{grid-template-columns:repeat(4,1fr)!important;}}
           `}</style>
         </div>
