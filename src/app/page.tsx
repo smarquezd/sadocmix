@@ -116,7 +116,7 @@ const F = {
 const GOLD = "radial-gradient(circle at 34% 28%, #FDEBB0 0%, #ECC152 34%, #B6841F 70%, #6F4D12 100%)";
 const PLAT = "radial-gradient(circle at 34% 28%, #FCFCFB 0%, #DADDE2 36%, #A1A7B0 70%, #5C616B 100%)";
 const LOGO_WHITE = "/img/logo-white.png";
-const AUDIO_EN_MEDALLO_DEMO = "/audio/en-medallo-demo.mp3";
+const AUDIO_EN_MEDALLO_DEMO = "/audio/en-medallo-demo.m4a";
 const AUDIO_EN_MEDALLO_MASTER = "/audio/en-medallo-master.mp3";
 
 
@@ -139,7 +139,7 @@ const TRACKS = [
   { id: 0, name: "Borracho y Loco", demo: "/audio/borracho-y-loco-demo.m4a", master: "/audio/borracho-y-loco-master.m4a" },
   { id: 1, name: "Amarillo", demo: "/audio/amarillo-demo.m4a", master: "/audio/amarillo-master.m4a" },
   { id: 2, name: "Tal Para Cual", demo: "/audio/tal-para-cual-demo.m4a", master: "/audio/tal-para-cual-master.m4a" },
-  { id: 3, name: "Mashallah", demo: "/audio/mashallah-demo.mp3", master: "/audio/mashallah-master.m4a" },
+  { id: 3, name: "Mashallah", demo: "/audio/mashallah-demo.m4a", master: "/audio/mashallah-master.m4a" },
   { id: 4, name: "En Medallo", demo: AUDIO_EN_MEDALLO_DEMO, master: AUDIO_EN_MEDALLO_MASTER },
 ];
 
