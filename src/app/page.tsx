@@ -136,11 +136,11 @@ const PAYMENT_LINKS = {
 /*  duration. The player keeps both in sync and just swaps which one  */
 /*  you hear when you toggle the A/B button.                          */
 const TRACKS = [
-  { id: 0, name: "En Medallo", demo: AUDIO_EN_MEDALLO_DEMO, master: AUDIO_EN_MEDALLO_MASTER },
-  { id: 1, name: "Tema 02", demo: "/audio/tema-02-demo.mp3", master: "/audio/tema-02-master.mp3" },
-  { id: 2, name: "Tema 03", demo: "/audio/tema-03-demo.mp3", master: "/audio/tema-03-master.mp3" },
-  { id: 3, name: "Tema 04", demo: "/audio/tema-04-demo.mp3", master: "/audio/tema-04-master.mp3" },
-  { id: 4, name: "Tema 05", demo: "/audio/tema-05-demo.mp3", master: "/audio/tema-05-master.mp3" },
+  { id: 0, name: "Borracho y Loco", demo: "/audio/borracho-y-loco-demo.m4a", master: "/audio/borracho-y-loco-master.m4a" },
+  { id: 1, name: "Amarillo", demo: "/audio/amarillo-demo.m4a", master: "/audio/amarillo-master.m4a" },
+  { id: 2, name: "Tal Para Cual", demo: "/audio/tal-para-cual-demo.m4a", master: "/audio/tal-para-cual-master.m4a" },
+  { id: 3, name: "Mashallah", demo: "/audio/mashallah-demo.mp3", master: "/audio/mashallah-master.m4a" },
+  { id: 4, name: "En Medallo", demo: AUDIO_EN_MEDALLO_DEMO, master: AUDIO_EN_MEDALLO_MASTER },
 ];
 
 /* ----------------------------- ui bits ----------------------------- */
